@@ -22,6 +22,7 @@ class MainGame {
   Level currentLevel;
 
   boolean showMenu = true;
+  boolean victoryAchieved = false;
 
   Unit selectedUnit = null;
   String mode = "move";
@@ -29,20 +30,24 @@ class MainGame {
   Button toggleButton;
   Button unselectButton;
   Button endTurnButton;
+  Button returnToMenuButton;
 
-  final int guiWidth = 200; // Fixed GUI panel width
+  final int guiWidth = 200;
 
   MainGame() {
     player1 = new Player("Player 1", true);
     enemy = new Player("Enemy", false);
-    endTurnButton = new Button(width - guiWidth + 25, height - 100, 150, 40, "End Turn");
+    endTurnButton = new Button(width - guiWidth + 25, height - 60, 150, 40, "End Turn");
+    returnToMenuButton = new Button(width / 2 - 100, height / 2 + 40, 200, 50, "Return to Menu");
   }
 
   void display() {
     if (showMenu) {
       displayMenu();
+    } else if (victoryAchieved) {
+      displayVictoryScreen();
     } else if (currentLevel != null) {
-      currentLevel.display(width - guiWidth, height); // Give available area excluding GUI
+      currentLevel.display(width - guiWidth, height);
       if (selectedUnit != null) {
         displayUnitGUI(selectedUnit);
         toggleButton.display();
@@ -51,6 +56,7 @@ class MainGame {
       endTurnButton.display();
       fill(0);
       textAlign(LEFT, TOP);
+      textSize(20);
       text(currentLevel.getObjective(), 10, 10);
     }
   }
@@ -68,12 +74,25 @@ class MainGame {
     text("Start Training Camp", width / 2, height / 2);
   }
 
+  void displayVictoryScreen() {
+    background(50, 180, 70);
+    fill(255);
+    textSize(48);
+    textAlign(CENTER, CENTER);
+    text("Victory: Objective Completed", width / 2, height / 2 - 50);
+    returnToMenuButton.display();
+  }
+
   void handleClick(float mx, float my) {
     if (showMenu) {
       if (mx >= width / 2 - 150 && mx <= width / 2 + 150 &&
           my >= height / 2 - 40 && my <= height / 2 + 40) {
         startTrainingCamp();
         showMenu = false;
+      }
+    } else if (victoryAchieved) {
+      if (returnToMenuButton.isClicked(mx, my)) {
+        resetToMenu();
       }
     } else if (selectedUnit != null && toggleButton.isClicked(mx, my)) {
       mode = mode.equals("move") ? "attack" : "move";
@@ -84,6 +103,7 @@ class MainGame {
       currentLevel.resetUnitActions(player1);
       selectedUnit = null;
       currentLevel.clearHighlights();
+      checkVictoryCondition();
     } else if (currentLevel != null) {
       if (selectedUnit != null) {
         boolean actionCompleted = currentLevel.handleTileAction(mx, my, selectedUnit, mode);
@@ -96,9 +116,9 @@ class MainGame {
         Unit clicked = currentLevel.selectUnit(mx, my, player1);
         if (clicked != null && (!clicked.moved || !clicked.attacked)) {
           selectedUnit = clicked;
-          mode = "move"; 
-          toggleButton = new Button(width - guiWidth + 25, 200, 150, 40, "Toggle Mode");
-          unselectButton = new Button(width - guiWidth + 25, 250, 150, 40, "Unselect");
+          mode = "move";
+          toggleButton = new Button(width - guiWidth + 25, 240, 150, 40, "Toggle Mode");
+          unselectButton = new Button(width - guiWidth + 25, 290, 150, 40, "Unselect");
         }
       }
     }
@@ -107,7 +127,30 @@ class MainGame {
   void startTrainingCamp() {
     currentLevel = new TrainingCampLevel(width - guiWidth, height);
     currentLevel.placeInitialUnits(player1, enemy);
+    victoryAchieved = false;
   }
+
+  void resetToMenu() {
+    showMenu = true;
+    victoryAchieved = false;
+    currentLevel = null;
+    selectedUnit = null;
+  }
+
+  void checkVictoryCondition() {
+    ArrayList<Unit> enemyList = currentLevel.getEnemyList();
+    boolean enemyUnitsLeft = false;
+    for (int i = 0; i < enemyList.size(); i++) {
+      Unit u = enemyList.get(i);
+      if (u.health > 0) {
+        enemyUnitsLeft = true;
+      break;
+      }
+    }
+    if (!enemyUnitsLeft) {
+      victoryAchieved = true;
+    }
+}
 
   void displayUnitGUI(Unit unit) {
     fill(200);

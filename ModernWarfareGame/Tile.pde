@@ -18,10 +18,14 @@ class Tile {
     float px = gridX * size;
     float py = gridY * size;
 
-    if (terrain.equals("P")) {
-      fill(150, 200, 150); 
-    } else {
-      fill(100);
+    if (terrain.equals("S")) {
+      fill(0,100,0); 
+    } 
+    if (terrain.equals("P")){
+      fill(210,180,140);
+    }
+    if (terrain.equals("T")){
+      fill(110);
     }
     rect(px, py, size, size);
 

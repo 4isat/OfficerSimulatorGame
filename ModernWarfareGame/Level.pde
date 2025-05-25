@@ -28,6 +28,10 @@ abstract class Level {
     }
   }
 
+  int getPixelWidth() {
+    return int(cols * tileSize);
+  }
+
   Unit selectUnit(float mx, float my, Player player) {
     clearHighlights();
     for (int i = 0; i < cols; i++) {
@@ -104,4 +108,5 @@ abstract class Level {
 
   abstract String getObjective();
   abstract void placeInitialUnits(Player player, Player enemy);
+  abstract ArrayList<Unit> getEnemyList();
 }

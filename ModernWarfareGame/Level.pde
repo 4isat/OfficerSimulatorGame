@@ -1,10 +1,13 @@
 abstract class Level {
   Tile[][] grid;
   int cols, rows;
+  float tileSize;
 
-  Level(int cols, int rows) {
+  Level(int cols, int rows, int availableWidth, int availableHeight) {
     this.cols = cols;
     this.rows = rows;
+
+    tileSize = min((float) availableWidth / cols, (float) availableHeight / rows);
     grid = new Tile[cols][rows];
     initEmptyGrid();
   }
@@ -12,12 +15,12 @@ abstract class Level {
   void initEmptyGrid() {
     for (int i = 0; i < cols; i++) {
       for (int j = 0; j < rows; j++) {
-        grid[i][j] = new Tile(i, j, "P");
+        grid[i][j] = new Tile(i, j, "P", tileSize);
       }
     }
   }
 
-  void display() {
+  void display(int availableWidth, int availableHeight) {
     for (int i = 0; i < cols; i++) {
       for (int j = 0; j < rows; j++) {
         grid[i][j].display();
@@ -65,7 +68,6 @@ abstract class Level {
         if (grid[i][j].contains(mx, my)) {
           int dist = abs(unit.gridX - i) + abs(unit.gridY - j);
           if (mode.equals("move") && dist <= unit.getRange() && grid[i][j].unit == null && !unit.moved) {
-            println("Moving unit from (" + unit.gridX + ", " + unit.gridY + ") to (" + i + ", " + j + ")");
             grid[unit.gridX][unit.gridY].unit = null;
             unit.move(i, j);
             grid[i][j].unit = unit;
@@ -75,11 +77,8 @@ abstract class Level {
           } else if (mode.equals("attack") && dist <= unit.getRange() &&
                      grid[i][j].unit != null &&
                      grid[i][j].unit.owner != unit.owner && !unit.attacked) {
-            println("Attacking enemy at (" + i + ", " + j + ")");
             unit.attack(grid[i][j].unit);
-            println("Enemy health is now: " + grid[i][j].unit.health);
             if (grid[i][j].unit.health <= 0) {
-              println("Enemy at (" + i + ", " + j + ") destroyed.");
               grid[i][j].unit = null;
             }
             clearHighlights(); 

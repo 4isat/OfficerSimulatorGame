@@ -1,5 +1,5 @@
 class TrainingCampLevel extends Level {
-  
+
   String[][] mapData = {
     {"P", "P", "T", "T", "B", "B", "T", "T", "P", "P"},
     {"P", "P", "T", "S", "S", "S", "T", "T", "P", "P"},
@@ -11,16 +11,16 @@ class TrainingCampLevel extends Level {
     {"P", "P", "P", "P", "P", "P", "P", "P", "P", "P"}
   };
 
-  TrainingCampLevel() {
-    super(10, 8);
+  TrainingCampLevel(int availableWidth, int availableHeight) {
+    super(10, 8, availableWidth, availableHeight);
     setupMap();
   }
 
   void setupMap() {
     for (int i = 0; i < cols; i++) {
-      for (int j = 0; j< rows; j++) {
+      for (int j = 0; j < rows; j++) {
         String type = mapData[j][i];
-        grid[i][j] = new Tile(i, j, type);
+        grid[i][j] = new Tile(i, j, type, tileSize);
       }
     }
   }

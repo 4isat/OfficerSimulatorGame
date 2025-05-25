@@ -14,7 +14,7 @@ abstract class Unit {
     this.gridY = gridY;
   }
 
-  abstract void display(float centerX, float centerY);
+  abstract void display(float centerX, float centerY, float size);
   abstract int getRange();
 
   void move(int newX, int newY) {
@@ -44,13 +44,13 @@ class InfantryUnit extends Unit {
   }
 
   @Override
-  void display(float centerX, float centerY) {
+  void display(float centerX, float centerY, float size) {
     if (owner.isHuman) {
       fill(0, 255, 0);
     } else {
       fill(255, 0, 0);
     }
-    ellipse(centerX, centerY, 30, 30);
+    ellipse(centerX, centerY, size * 0.6, size * 0.6);
   }
 
   @Override

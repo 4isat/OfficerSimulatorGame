@@ -1,7 +1,10 @@
 MainGame game;
 
+void settings() {
+  fullScreen();
+}
+
 void setup() {
-  size(800, 600);
   game = new MainGame();
 }
 
@@ -27,17 +30,19 @@ class MainGame {
   Button unselectButton;
   Button endTurnButton;
 
+  final int guiWidth = 200; // Fixed GUI panel width
+
   MainGame() {
     player1 = new Player("Player 1", true);
     enemy = new Player("Enemy", false);
-    endTurnButton = new Button(width - 150, 500, 120, 40, "End Turn");
+    endTurnButton = new Button(width - guiWidth + 25, height - 100, 150, 40, "End Turn");
   }
 
   void display() {
     if (showMenu) {
       displayMenu();
     } else if (currentLevel != null) {
-      currentLevel.display();
+      currentLevel.display(width - guiWidth, height); // Give available area excluding GUI
       if (selectedUnit != null) {
         displayUnitGUI(selectedUnit);
         toggleButton.display();
@@ -53,20 +58,20 @@ class MainGame {
   void displayMenu() {
     background(100, 150, 200);
     fill(255);
-    textSize(32);
+    textSize(48);
     textAlign(CENTER, CENTER);
     text("Modern Warfare Game", width / 2, height / 4);
     fill(50, 200, 50);
-    rect(width / 2 - 100, height / 2 - 25, 200, 50);
+    rect(width / 2 - 150, height / 2 - 40, 300, 80);
     fill(0);
-    textSize(20);
+    textSize(28);
     text("Start Training Camp", width / 2, height / 2);
   }
 
   void handleClick(float mx, float my) {
     if (showMenu) {
-      if (mx >= width / 2 - 100 && mx <= width / 2 + 100 &&
-          my >= height / 2 - 25 && my <= height / 2 + 25) {
+      if (mx >= width / 2 - 150 && mx <= width / 2 + 150 &&
+          my >= height / 2 - 40 && my <= height / 2 + 40) {
         startTrainingCamp();
         showMenu = false;
       }
@@ -92,30 +97,30 @@ class MainGame {
         if (clicked != null && (!clicked.moved || !clicked.attacked)) {
           selectedUnit = clicked;
           mode = "move"; 
-          toggleButton = new Button(width - 150, 300, 120, 40, "Toggle Mode");
-          unselectButton = new Button(width - 150, 350, 120, 40, "Unselect");
+          toggleButton = new Button(width - guiWidth + 25, 200, 150, 40, "Toggle Mode");
+          unselectButton = new Button(width - guiWidth + 25, 250, 150, 40, "Unselect");
         }
       }
     }
   }
 
   void startTrainingCamp() {
-    currentLevel = new TrainingCampLevel();
+    currentLevel = new TrainingCampLevel(width - guiWidth, height);
     currentLevel.placeInitialUnits(player1, enemy);
   }
 
   void displayUnitGUI(Unit unit) {
     fill(200);
-    rect(width - 200, 0, 200, height);
+    rect(width - guiWidth, 0, guiWidth, height);
     fill(0);
-    textSize(14);
+    textSize(18);
     textAlign(LEFT, TOP);
-    text("Unit Info", width - 190, 10);
-    text("Type: Infantry", width - 190, 40);
-    text("Health: " + unit.health, width - 190, 70);
-    text("Morale: 100", width - 190, 100);
-    text("Ammo: 10", width - 190, 130);
-    text("Fuel: 5", width - 190, 160);
-    text("Mode: " + mode.toUpperCase(), width - 190, 200);
+    text("Unit Info", width - guiWidth + 10, 10);
+    text("Type: Infantry", width - guiWidth + 10, 40);
+    text("Health: " + unit.health, width - guiWidth + 10, 70);
+    text("Morale: 100", width - guiWidth + 10, 100);
+    text("Ammo: 10", width - guiWidth + 10, 130);
+    text("Fuel: 5", width - guiWidth + 10, 160);
+    text("Mode: " + mode.toUpperCase(), width - guiWidth + 10, 200);
   }
 }

@@ -3,19 +3,20 @@ class Tile {
   String terrain;
   Unit unit;
   boolean isHighlighted;
+  float size;
 
-  Tile(int x, int y, String terrain) {
+  Tile(int x, int y, String terrain, float size) {
     this.gridX = x;
     this.gridY = y;
     this.terrain = terrain;
     this.unit = null;
     this.isHighlighted = false;
+    this.size = size;
   }
 
   void display() {
-    int size = 40;
-    int px = gridX * size;
-    int py = gridY * size;
+    float px = gridX * size;
+    float py = gridY * size;
 
     if (terrain.equals("P")) {
       fill(150, 200, 150); 
@@ -33,35 +34,19 @@ class Tile {
     }
 
     if (unit != null) {
-      if (unit.owner == null) {
-        fill(128);
-      } else if (unit.owner.name.equals("Player 1")) {
-        fill(0, 0, 255);  // Blue for player
-      } else {
-        fill(255, 0, 0);  // Red for enemy
-      }
-
-      ellipse(px + size / 2, py + size / 2, size * 0.6, size * 0.6);
-      int actionsLeft = 0;
-      if (!unit.moved && !unit.attacked) {
-        actionsLeft = 2;
-      } else if (unit.moved && !unit.attacked) {
-        actionsLeft = 1;
-      } else {
-        actionsLeft = 0;
-      }
-
+      unit.display(px + size / 2, py + size / 2, size);
       fill(255);
       textAlign(CENTER, CENTER);
-      textSize(14);
+      textSize(size * 0.3);
+      int actionsLeft = (!unit.moved && !unit.attacked) ? 2 :
+                        (unit.moved && !unit.attacked) ? 1 : 0;
       text(actionsLeft, px + size / 2, py + size / 2);
     }
   }
 
   boolean contains(float mx, float my) {
-    int size = 40;
-    int px = gridX * size;
-    int py = gridY * size;
+    float px = gridX * size;
+    float py = gridY * size;
     return mx >= px && mx < px + size && my >= py && my < py + size;
   }
 }

@@ -15,10 +15,10 @@ class Button {
     rect(x, y, w, h);
     fill(0);
     textAlign(CENTER, CENTER);
-    text(label, x+w/2, y+h/2);
+    text(label, x + w / 2, y + h / 2);
   }
 
   boolean isClicked(float mx, float my) {
-    return (mx >=x && mx <= x + w && my>=y && my <= y+h);
+    return (mx >= x && mx <= x + w && my >= y && my <= y + h);
   }
 }

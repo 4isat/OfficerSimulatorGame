@@ -10,7 +10,7 @@ abstract class Level {
   }
 
   void initEmptyGrid() {
-    for (int i= 0; i < cols; i++) {
+    for (int i = 0; i < cols; i++) {
       for (int j = 0; j < rows; j++) {
         grid[i][j] = new Tile(i, j, "P");
       }
@@ -19,7 +19,7 @@ abstract class Level {
 
   void display() {
     for (int i = 0; i < cols; i++) {
-      for (int j = 0; j< rows; j++) {
+      for (int j = 0; j < rows; j++) {
         grid[i][j].display();
       }
     }
@@ -27,12 +27,11 @@ abstract class Level {
 
   Unit selectUnit(float mx, float my, Player player) {
     clearHighlights();
-
     for (int i = 0; i < cols; i++) {
       for (int j = 0; j < rows; j++) {
         if (grid[i][j].contains(mx, my) && grid[i][j].unit != null &&
-            grid[i][j].unit.owner == player) {
-          println("Selected unit at " + i + "," + j);
+            grid[i][j].unit.owner == player &&
+            (!grid[i][j].unit.moved || !grid[i][j].unit.attacked)) {
           highlightRange(grid[i][j].unit);
           return grid[i][j].unit;
         }
@@ -42,8 +41,8 @@ abstract class Level {
   }
 
   void clearHighlights() {
-    for (int i = 0; i<cols; i++) {
-      for (int j=0; j < rows; j++) {
+    for (int i = 0; i < cols; i++) {
+      for (int j = 0; j < rows; j++) {
         grid[i][j].isHighlighted = false;
       }
     }
@@ -51,9 +50,9 @@ abstract class Level {
 
   void highlightRange(Unit unit) {
     int range = unit.getRange();
-    for (int i = max(0, unit.gridX-range); i <= min(cols-1, unit.gridX+range); i++) {
-      for (int j = max(0, unit.gridY-range); j <= min(rows-1, unit.gridY+range); j++) {
-        if (abs(unit.gridX-i) + abs(unit.gridY-j) <= range) {
+    for (int i = max(0, unit.gridX - range); i <= min(cols - 1, unit.gridX + range); i++) {
+      for (int j = max(0, unit.gridY - range); j <= min(rows - 1, unit.gridY + range); j++) {
+        if (abs(unit.gridX - i) + abs(unit.gridY - j) <= range) {
           grid[i][j].isHighlighted = true;
         }
       }
@@ -65,28 +64,43 @@ abstract class Level {
       for (int j = 0; j < rows; j++) {
         if (grid[i][j].contains(mx, my)) {
           int dist = abs(unit.gridX - i) + abs(unit.gridY - j);
-          if (mode.equals("move") && dist <= unit.getRange() && grid[i][j].unit == null) {
+          if (mode.equals("move") && dist <= unit.getRange() && grid[i][j].unit == null && !unit.moved) {
+            println("Moving unit from (" + unit.gridX + ", " + unit.gridY + ") to (" + i + ", " + j + ")");
             grid[unit.gridX][unit.gridY].unit = null;
             unit.move(i, j);
             grid[i][j].unit = unit;
-            println("Moved unit to " + i + "," + j);
-            clearHighlights();
+            clearHighlights(); 
+            highlightRange(unit); 
             return true;
           } else if (mode.equals("attack") && dist <= unit.getRange() &&
                      grid[i][j].unit != null &&
-                     grid[i][j].unit.owner != unit.owner) {
+                     grid[i][j].unit.owner != unit.owner && !unit.attacked) {
+            println("Attacking enemy at (" + i + ", " + j + ")");
             unit.attack(grid[i][j].unit);
+            println("Enemy health is now: " + grid[i][j].unit.health);
             if (grid[i][j].unit.health <= 0) {
-              println("Enemy unit destroyed!");
+              println("Enemy at (" + i + ", " + j + ") destroyed.");
               grid[i][j].unit = null;
             }
-            clearHighlights();
+            clearHighlights(); 
             return true;
           }
         }
       }
     }
     return false;
+  }
+
+  void resetUnitActions(Player player) {
+    for (int i = 0; i < cols; i++) {
+      for (int j = 0; j < rows; j++) {
+        Unit u = grid[i][j].unit;
+        if (u != null && u.owner == player) {
+          u.moved = false;
+          u.attacked = false;
+        }
+      }
+    }
   }
 
   abstract String getObjective();

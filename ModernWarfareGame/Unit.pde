@@ -5,6 +5,9 @@ abstract class Unit {
   int maxHealth;
   int attackPower;
 
+  boolean moved = false;
+  boolean attacked = false;
+
   Unit(Player owner, int gridX, int gridY) {
     this.owner = owner;
     this.gridX = gridX;
@@ -17,12 +20,17 @@ abstract class Unit {
   void move(int newX, int newY) {
     this.gridX = newX;
     this.gridY = newY;
+    this.moved = true;
   }
 
   void attack(Unit target) {
-    println("Attacking unit at " + target.gridX + "," + target.gridY);
     target.health -= this.attackPower;
     if (target.health < 0) target.health = 0;
+    this.attacked = true;
+  }
+
+  boolean hasActed() {
+    return moved && attacked;
   }
 }
 
@@ -38,15 +46,15 @@ class InfantryUnit extends Unit {
   @Override
   void display(float centerX, float centerY) {
     if (owner.isHuman) {
-      fill(0, 255, 0);  // green for human
+      fill(0, 255, 0);
     } else {
-      fill(255, 0, 0);  // red for enemy
+      fill(255, 0, 0);
     }
     ellipse(centerX, centerY, 30, 30);
   }
 
   @Override
   int getRange() {
-    return 3; 
+    return 3;
   }
 }

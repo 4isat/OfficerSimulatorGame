@@ -29,8 +29,8 @@ class TrainingCampLevel extends Level {
 
   void placeInitialUnits(Player player, Player enemy) {
     grid[1][1].unit = new InfantryUnit(player, 1, 1);
-    grid[1][3].unit = new InfantryUnit(player, 1, 3);
-    grid[2][2].unit = new InfantryUnit(player, 2, 2);
+    grid[1][3].unit = new CavalryUnit(player, 1, 3);
+    grid[2][2].unit = new ArtilleryUnit(player, 2, 2);
     Unit enemy1 = new InfantryUnit(enemy, 8, 1);
     grid[8][1].unit = enemy1;
     enemyList.add(enemy1);
@@ -43,7 +43,10 @@ class TrainingCampLevel extends Level {
   }
 
   String getObjective() {
-    return "Learn the basics: move infantry units and destroy the enemies";
+    return """
+    Learn the basics: move infantry units and destroy the enemies.
+    Click on a unit to move them, toggle mode and click on an enemy to attack.
+    """;
   }
   
   ArrayList<Unit> getEnemyList(){

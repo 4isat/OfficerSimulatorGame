@@ -82,8 +82,7 @@ abstract class Level {
             highlightRange(unit, "move");
             return true;
           } else if (mode.equals("attack") && dist <= unit.getAttackRange() &&
-                     grid[i][j].unit != null &&
-                     grid[i][j].unit.owner != unit.owner && !unit.attacked) {
+                     grid[i][j].unit != null && !unit.attacked) {
             Unit target = grid[i][j].unit;
             unit.attack(target);
             boolean killed = target.health <= 0;

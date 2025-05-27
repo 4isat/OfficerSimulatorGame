@@ -31,6 +31,8 @@ class TrainingCampLevel extends Level {
     grid[1][1].unit = new InfantryUnit(player, 1, 1);
     grid[1][3].unit = new CavalryUnit(player, 1, 3);
     grid[2][2].unit = new ArtilleryUnit(player, 2, 2);
+    grid[1][2].unit = new LogisticsUnit(player, 1, 2);
+    grid[0][2].unit = new DroneUnit(player, 0, 2);
     Unit enemy1 = new InfantryUnit(enemy, 8, 1);
     grid[8][1].unit = enemy1;
     enemyList.add(enemy1);

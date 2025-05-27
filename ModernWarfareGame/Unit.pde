@@ -1,24 +1,57 @@
 abstract class Unit {
-  Player owner;
-  int gridX, gridY;
-  int health;
-  int baseMaxHealth;
-  int attackPower;
-  int morale;
-  int ammo;
-  int fuel;
+  private Player owner;
+  private int gridX, gridY;
+  private int health;
+  private int baseMaxHealth;
+  private int attackPower;
+  private int morale;
+  private int ammo;
+  private int fuel;
 
-  boolean moved = false;
-  boolean attacked = false;
+  private boolean moved = false;
+  private boolean attacked = false;
 
   Unit(Player owner, int gridX, int gridY) {
     this.owner = owner;
     this.gridX = gridX;
     this.gridY = gridY;
     this.morale = 100;
-    this.ammo = 7; 
-    this.fuel = 10;  
+    this.ammo = 7;
+    this.fuel = 10;
   }
+
+  Player getOwner() { return owner; }
+  void setOwner(Player owner) { this.owner = owner; }
+
+  int getGridX() { return gridX; }
+  void setGridX(int x) { this.gridX = x; }
+
+  int getGridY() { return gridY; }
+  void setGridY(int y) { this.gridY = y; }
+
+  int getHealth() { return health; }
+  void setHealth(int health) { this.health = health; }
+
+  int getBaseMaxHealth() { return baseMaxHealth; }
+  void setBaseMaxHealth(int maxHealth) { this.baseMaxHealth = maxHealth; }
+
+  int getAttackPower() { return attackPower; }
+  void setAttackPower(int attackPower) { this.attackPower = attackPower; }
+
+  int getMorale() { return morale; }
+  void setMorale(int morale) { this.morale = morale; }
+
+  int getAmmo() { return ammo; }
+  void setAmmo(int ammo) { this.ammo = ammo; }
+
+  int getFuel() { return fuel; }
+  void setFuel(int fuel) { this.fuel = fuel; }
+
+  boolean hasMoved() { return moved; }
+  void setMoved(boolean moved) { this.moved = moved; }
+
+  boolean hasAttacked() { return attacked; }
+  void setAttacked(boolean attacked) { this.attacked = attacked; }
 
   abstract void display(float centerX, float centerY, float size);
   abstract int getRange();
@@ -37,33 +70,33 @@ abstract class Unit {
 
   void move(int newX, int newY) {
     if (fuel > 0) {
-      this.gridX = newX;
-      this.gridY = newY;
-      this.moved = true;
-      this.fuel -= 1;
+      setGridX(newX);
+      setGridY(newY);
+      setMoved(true);
+      setFuel(fuel - 1);
     }
   }
 
   void attack(Unit target) {
     if (ammo > 0) {
       int damage = getEffectiveDamage();
-      target.health -= damage;
-      if (target.health <= 0) {
-        target.health = 0;
-        this.morale += 40;
+      target.setHealth(target.getHealth() - damage);
+      if (target.getHealth() <= 0) {
+        target.setHealth(0);
+        setMorale(morale + 40);
       } else {
-        target.morale -= 20;
-        if (target.morale < 0) target.morale = 0;
+        target.setMorale(target.getMorale() - 20);
+        if (target.getMorale() < 0) target.setMorale(0);
       }
-      this.attacked = true;
-      this.ammo -= 1; 
+      setAttacked(true);
+      setAmmo(ammo - 1);
     }
   }
 
   void updateEffectiveHealth() {
     int effectiveMax = getEffectiveMaxHealth();
     if (health > effectiveMax) {
-      health = effectiveMax;
+      setHealth(effectiveMax);
     }
   }
 
@@ -73,17 +106,17 @@ abstract class Unit {
 }
 
 class InfantryUnit extends Unit {
-  
+
   InfantryUnit(Player owner, int gridX, int gridY) {
     super(owner, gridX, gridY);
-    this.attackPower = 25;
-    this.baseMaxHealth = 120;
-    this.health = baseMaxHealth;
+    setAttackPower(25);
+    setBaseMaxHealth(120);
+    setHealth(getBaseMaxHealth());
   }
 
   @Override
   void display(float centerX, float centerY, float size) {
-    if (owner.isHuman) {
+    if (getOwner().isHuman) {
       fill(0, 255, 0);
     } else {
       fill(255, 0, 0);
@@ -92,71 +125,59 @@ class InfantryUnit extends Unit {
   }
 
   @Override
-  int getRange() {
-    return 3;
-  }
-  
+  int getRange() { return 3; }
+
   @Override
-  int getAttackRange(){
-    return 1;
-  }
-  
+  int getAttackRange() { return 1; }
+
   @Override
-  String getType(){
-    return "Infantry";
-  }
+  String getType() { return "Infantry"; }
 }
 
 class CavalryUnit extends Unit {
-  
+
   CavalryUnit(Player owner, int gridX, int gridY) {
     super(owner, gridX, gridY);
-    this.attackPower = 35;
-    this.baseMaxHealth = 250;
-    this.health = baseMaxHealth;
+    setAttackPower(35);
+    setBaseMaxHealth(250);
+    setHealth(getBaseMaxHealth());
   }
 
   @Override
   void display(float centerX, float centerY, float size) {
-    if (owner.isHuman) {
+    if (getOwner().isHuman) {
       fill(0, 0, 255);
     } else {
-      fill(255, 165, 0); 
+      fill(255, 165, 0);
     }
     ellipse(centerX, centerY, size * 0.7, size * 0.7);
   }
 
   @Override
-  int getRange() {
-    return 6;
-  }
-  
+  int getRange() { return 6; }
+
   @Override
-  int getAttackRange(){
-    return 2;
-  }
-  
+  int getAttackRange() { return 2; }
+
   @Override
-  String getType(){
-    return "Cavalry";
-  }
+  String getType() { return "Cavalry"; }
 }
 
 class ArtilleryUnit extends Unit {
 
   ArtilleryUnit(Player owner, int gridX, int gridY) {
     super(owner, gridX, gridY);
-    this.attackPower = 80;  
-    this.baseMaxHealth = 60;
-    this.health = baseMaxHealth;
-    this.fuel = 6;    
-    this.ammo = 4;   
+    setAttackPower(80);
+    setBaseMaxHealth(60);
+    setHealth(getBaseMaxHealth());
+    setFuel(6);
+    setAmmo(4);
   }
 
   @Override
   void display(float centerX, float centerY, float size) {
-    if (owner.isHuman) {
-      fill(128, 0, 128); 
+    if (getOwner().isHuman) {
+      fill(128, 0, 128);
     } else {
       fill(139, 69, 19);
     }
@@ -164,57 +185,47 @@ class ArtilleryUnit extends Unit {
   }
 
   @Override
-  int getRange() {
-    return 2; 
-  }
+  int getRange() { return 2; }
 
   @Override
-  int getAttackRange() {
-    return 9; 
-  }
+  int getAttackRange() { return 9; }
 
   @Override
-  String getType() {
-    return "Artillery";
-  }
+  String getType() { return "Artillery"; }
 
   @Override
   void attack(Unit target) {
-    if (ammo > 0) {
-      int tx = target.gridX;
-      int ty = target.gridY;
-      //the above is leftover from when I wanted to implement splash damage but that might have to wait. 
-      if (target.getType().equals("Cavalry") || target.getType().equals("Artillery")){
-        target.health -= attackPower;
-      }
-      else{
-        target.health -= attackPower*0.3;
-      }
-      if (target.health <= 0) {
-        target.health = 0;
-        this.morale += 40;
+    if (getAmmo() > 0) {
+      if (target.getType().equals("Cavalry") || target.getType().equals("Artillery")) {
+        target.setHealth(target.getHealth() - getAttackPower());
       } else {
-        target.morale -= 20;
-        if (target.morale < 0) target.morale = 0;
+        target.setHealth((int)(target.getHealth() - getAttackPower() * 0.3));
       }
-      this.attacked = true;
-      this.ammo -= 1;
+      if (target.getHealth() <= 0) {
+        target.setHealth(0);
+        setMorale(getMorale() + 40);
+      } else {
+        target.setMorale(target.getMorale() - 20);
+        if (target.getMorale() < 0) target.setMorale(0);
+      }
+      setAttacked(true);
+      setAmmo(getAmmo() - 1);
     }
   }
 }
 
 class LogisticsUnit extends Unit {
-  
+
   LogisticsUnit(Player owner, int gridX, int gridY) {
     super(owner, gridX, gridY);
-    this.attackPower = 15;
-    this.baseMaxHealth = 80;
-    this.health = baseMaxHealth;
+    setAttackPower(15);
+    setBaseMaxHealth(80);
+    setHealth(getBaseMaxHealth());
   }
 
   @Override
   void display(float centerX, float centerY, float size) {
-    if (owner.isHuman) {
+    if (getOwner().isHuman) {
       fill(0, 255, 0);
     } else {
       fill(255, 0, 0);
@@ -223,52 +234,46 @@ class LogisticsUnit extends Unit {
   }
 
   @Override
-  int getRange() {
-    return 3;
-  }
-  
+  int getRange() { return 3; }
+
   @Override
-  int getAttackRange(){
-    return 1;
-  }
-  
+  int getAttackRange() { return 1; }
+
   @Override
-  String getType(){
-    return "Supply";
-  }
-  
+  String getType() { return "Supply"; }
+
   @Override
   void attack(Unit target) {
-    if (ammo > 0) {
-      if (target.health<target.baseMaxHealth){
-        int damage = getEffectiveDamage();
-        target.health += damage;
-        if (target.health >= target.baseMaxHealth) {
-          target.health = target.baseMaxHealth;
+    if (getAmmo() > 0) {
+      if (target.getHealth() < target.getBaseMaxHealth()) {
+        int heal = getEffectiveDamage();
+        target.setHealth(target.getHealth() + heal);
+        if (target.getHealth() >= target.getBaseMaxHealth()) {
+          target.setHealth(target.getBaseMaxHealth());
         }
       }
-      target.ammo += 4;
-      target.fuel += 4;
-      target.morale += 5;
-      this.morale += 5;
-      this.attacked = true;
+      target.setAmmo(target.getAmmo() + 4);
+      target.setFuel(target.getFuel() + 4);
+      target.setMorale(target.getMorale() + 5);
+      setMorale(getMorale() + 5);
+      setAttacked(true);
     }
   }
 }
 
 class DroneUnit extends Unit {
-  
+
   DroneUnit(Player owner, int gridX, int gridY) {
     super(owner, gridX, gridY);
-    this.attackPower = 60;
-    this.baseMaxHealth = 80;
-    this.health = baseMaxHealth;
-    this.ammo = 4;
+    setAttackPower(60);
+    setBaseMaxHealth(80);
+    setHealth(getBaseMaxHealth());
+    setAmmo(4);
   }
 
   @Override
   void display(float centerX, float centerY, float size) {
-    if (owner.isHuman) {
+    if (getOwner().isHuman) {
       fill(0, 255, 0);
     } else {
       fill(255, 0, 0);
@@ -277,41 +282,35 @@ class DroneUnit extends Unit {
   }
 
   @Override
-  int getRange() {
-    return 3;
-  }
-  
+  int getRange() { return 3; }
+
   @Override
-  int getAttackRange(){
-    return 7;
-  }
-  
+  int getAttackRange() { return 7; }
+
   @Override
-  String getType(){
-    return "Drone Unit";
-  }
-  
+  String getType() { return "Drone Unit"; }
+
   @Override
   void attack(Unit target) {
-    if (ammo > 0) {
+    if (getAmmo() > 0) {
       int damage = getEffectiveDamage();
       double probability = 1;
       double actualProbability = Math.random();
-      if (target.getType().equals("Infantry")){
+      if (target.getType().equals("Infantry")) {
         probability = 0.6;
       }
-      if (actualProbability<probability){
-        target.health -= damage;
-        if (target.health <= 0) {
-          target.health = 0;
-          this.morale += 40;
+      if (actualProbability < probability) {
+        target.setHealth(target.getHealth() - damage);
+        if (target.getHealth() <= 0) {
+          target.setHealth(0);
+          setMorale(getMorale() + 40);
         } else {
-          target.morale -= 20;
-          if (target.morale < 0) target.morale = 0;
+          target.setMorale(target.getMorale() - 20);
+          if (target.getMorale() < 0) target.setMorale(0);
         }
       }
-      this.ammo -= 1;
-      this.attacked = true;
+      setAmmo(getAmmo() - 1);
+      setAttacked(true);
     }
   }
 }

@@ -17,22 +17,18 @@ void mousePressed() {
 }
 
 class MainGame {
-  Player player1;
-  Player enemy;
-  Level currentLevel;
-
-  boolean showMenu = true;
-  boolean victoryAchieved = false;
-
-  Unit selectedUnit = null;
-  String mode = "move";
-
-  Button toggleButton;
-  Button unselectButton;
-  Button endTurnButton;
-  Button returnToMenuButton;
-
-  final int guiWidth = 200;
+  private Player player1;
+  private Player enemy;
+  private Level currentLevel;
+  private boolean showMenu = true;
+  private boolean victoryAchieved = false;
+  private Unit selectedUnit = null;
+  private String mode = "move";
+  private Button toggleButton;
+  private Button unselectButton;
+  private Button endTurnButton;
+  private Button returnToMenuButton;
+  private final int guiWidth = 200;
 
   MainGame() {
     player1 = new Player("Player 1", true);
@@ -40,6 +36,40 @@ class MainGame {
     endTurnButton = new Button(width - guiWidth + 25, height - 60, 150, 40, "End Turn");
     returnToMenuButton = new Button(width / 2 - 100, height / 2 + 40, 200, 50, "Return to Menu");
   }
+  Player getPlayer1() { return player1; }
+  void setPlayer1(Player p) { player1 = p; }
+
+  Player getEnemy() { return enemy; }
+  void setEnemy(Player e) { enemy = e; }
+
+  Level getCurrentLevel() { return currentLevel; }
+  void setCurrentLevel(Level l) { currentLevel = l; }
+
+  boolean isShowMenu() { return showMenu; }
+  void setShowMenu(boolean s) { showMenu = s; }
+
+  boolean isVictoryAchieved() { return victoryAchieved; }
+  void setVictoryAchieved(boolean v) { victoryAchieved = v; }
+
+  Unit getSelectedUnit() { return selectedUnit; }
+  void setSelectedUnit(Unit u) { selectedUnit = u; }
+
+  String getMode() { return mode; }
+  void setMode(String m) { mode = m; }
+
+  Button getToggleButton() { return toggleButton; }
+  void setToggleButton(Button b) { toggleButton = b; }
+
+  Button getUnselectButton() { return unselectButton; }
+  void setUnselectButton(Button b) { unselectButton = b; }
+
+  Button getEndTurnButton() { return endTurnButton; }
+  void setEndTurnButton(Button b) { endTurnButton = b; }
+
+  Button getReturnToMenuButton() { return returnToMenuButton; }
+  void setReturnToMenuButton(Button b) { returnToMenuButton = b; }
+
+  int getGuiWidth() { return guiWidth; }
 
   void display() {
     if (showMenu) {
@@ -127,7 +157,7 @@ class MainGame {
                 } else {
                   Unit clicked = currentLevel.selectUnit(mx, my, player1);
                   if (clicked != null) {
-                    if (!clicked.moved || !clicked.attacked) {
+                    if (!clicked.hasMoved() || !clicked.hasAttacked()) {
                       selectedUnit = clicked;
                       mode = "move";
                       toggleButton = new Button(width - guiWidth + 25, 240, 150, 40, "Toggle Mode");
@@ -161,7 +191,7 @@ class MainGame {
     boolean enemyUnitsLeft = false;
     for (int i = 0; i < enemyList.size(); i++) {
       Unit u = enemyList.get(i);
-      if (u.health > 0) {
+      if (u.getHealth() > 0) {
         enemyUnitsLeft = true;
         break;
       }
@@ -179,11 +209,11 @@ class MainGame {
     textAlign(LEFT, TOP);
     text("Unit Info", width - guiWidth + 10, 10);
     text("Type: Infantry", width - guiWidth + 10, 40);
-    text("Health: " + unit.health + " / " + unit.getEffectiveMaxHealth(), width - guiWidth + 10, 70);
-    text("Morale: " + unit.morale, width - guiWidth + 10, 100);
+    text("Health: " + unit.getHealth() + " / " + unit.getEffectiveMaxHealth(), width - guiWidth + 10, 70);
+    text("Morale: " + unit.getMorale(), width - guiWidth + 10, 100);
     text("Effective Dmg: " + unit.getEffectiveDamage(), width - guiWidth + 10, 130);
-    text("Ammo: " + unit.ammo, width - guiWidth + 10, 160);
-    text("Fuel: " + unit.fuel, width - guiWidth + 10, 190);
+    text("Ammo: " + unit.getAmmo(), width - guiWidth + 10, 160);
+    text("Fuel: " + unit.getFuel(), width - guiWidth + 10, 190);
     text("Mode: " + mode.toUpperCase(), width - guiWidth + 10, 230);
   }
 }

@@ -1,8 +1,8 @@
 class TrainingCampLevel extends Level {
-  
-  ArrayList<Unit> enemyList = new ArrayList<Unit>();
 
-  String[][] mapData = {
+  private ArrayList<Unit> enemyList = new ArrayList<Unit>();
+
+  private String[][] mapData = {
     {"P", "P", "T", "T", "B", "B", "T", "T", "P", "P"},
     {"P", "P", "T", "S", "S", "S", "T", "T", "P", "P"},
     {"P", "P", "P", "P", "P", "P", "P", "P", "P", "P"},
@@ -18,29 +18,48 @@ class TrainingCampLevel extends Level {
     setupMap();
   }
 
+  ArrayList<Unit> getEnemyList() {
+    return enemyList;
+  }
+
+  void setEnemyList(ArrayList<Unit> enemyList) {
+    this.enemyList = enemyList;
+  }
+
+  String[][] getMapData() {
+    return mapData;
+  }
+
+  void setMapData(String[][] mapData) {
+    this.mapData = mapData;
+  }
+
   void setupMap() {
-    for (int i = 0; i < cols; i++) {
-      for (int j = 0; j < rows; j++) {
+    for (int i = 0; i < getCols(); i++) {
+      for (int j = 0; j < getRows(); j++) {
         String type = mapData[j][i];
-        grid[i][j] = new Tile(i, j, type, tileSize);
+        getGrid()[i][j] = new Tile(i, j, type, getTileSize());
       }
     }
   }
 
   void placeInitialUnits(Player player, Player enemy) {
-    grid[1][1].unit = new InfantryUnit(player, 1, 1);
-    grid[1][3].unit = new CavalryUnit(player, 1, 3);
-    grid[2][2].unit = new ArtilleryUnit(player, 2, 2);
-    grid[1][2].unit = new LogisticsUnit(player, 1, 2);
-    grid[0][2].unit = new DroneUnit(player, 0, 2);
+    getGrid()[1][1].setUnit(new InfantryUnit(player, 1, 1));
+    getGrid()[1][3].setUnit(new CavalryUnit(player, 1, 3));
+    getGrid()[2][2].setUnit(new ArtilleryUnit(player, 2, 2));
+    getGrid()[1][2].setUnit(new LogisticsUnit(player, 1, 2));
+    getGrid()[0][2].setUnit(new DroneUnit(player, 0, 2));
+
     Unit enemy1 = new InfantryUnit(enemy, 8, 1);
-    grid[8][1].unit = enemy1;
+    getGrid()[8][1].setUnit(enemy1);
     enemyList.add(enemy1);
+
     Unit enemy2 = new InfantryUnit(enemy, 8, 3);
-    grid[8][3].unit = enemy2;
+    getGrid()[8][3].setUnit(enemy2);
     enemyList.add(enemy2);
+
     Unit enemy3 = new InfantryUnit(enemy, 7, 2);
-    grid[7][2].unit = enemy3;
+    getGrid()[7][2].setUnit(enemy3);
     enemyList.add(enemy3);
   }
 
@@ -49,9 +68,5 @@ class TrainingCampLevel extends Level {
     Learn the basics: move infantry units and destroy the enemies.
     Click on a unit to move them, toggle mode and click on an enemy to attack.
     """;
-  }
-  
-  ArrayList<Unit> getEnemyList(){
-    return enemyList; 
   }
 }

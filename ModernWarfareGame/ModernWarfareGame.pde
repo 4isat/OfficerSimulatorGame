@@ -1,6 +1,4 @@
 MainGame game;
-GameLog gameLog;
-
 
 void settings() {
   fullScreen();
@@ -11,14 +9,7 @@ void setup() {
 }
 
 void draw() {
-  // Your existing drawing code...
-
-  // Draw the log panel on the right
-  float logPanelX = 800;  // if your board is 800px wide (10 tiles * 80px)
-  float logPanelWidth = width - logPanelX;
-  float logPanelHeight = height;
-  
-  gameLog.display(logPanelX, 0, logPanelWidth, logPanelHeight);
+  game.display();
 }
 
 void mousePressed() {
@@ -38,12 +29,12 @@ class MainGame {
   private Button endTurnButton;
   private Button returnToMenuButton;
   private final int guiWidth = 200;
-  
+
   MainGame() {
     player1 = new Player("Player 1", true);
     enemy = new Player("Enemy", false);
-    endTurnButton = new Button(width - guiWidth + 25, height - 60, 150, 40, "End Turn");
-    returnToMenuButton = new Button(width / 2 - 100, height / 2 + 40, 200, 50, "Return to Menu");
+    endTurnButton = new Button(width - guiWidth + 25, height - 140, 150, 40, "End Turn");
+    returnToMenuButton = new Button(width - guiWidth + 25, height - 180, 150, 40, "Return to Menu");
   }
   Player getPlayer1() { return player1; }
   void setPlayer1(Player p) { player1 = p; }
@@ -169,8 +160,8 @@ class MainGame {
                     if (!clicked.hasMoved() || !clicked.hasAttacked()) {
                       selectedUnit = clicked;
                       mode = "move";
-                      toggleButton = new Button(width - guiWidth + 25, 240, 150, 40, "Toggle Mode");
-                      unselectButton = new Button(width - guiWidth + 25, 290, 150, 40, "Unselect");
+                      toggleButton = new Button(width - guiWidth + 25, 370, 150, 40, "Toggle Mode");
+                      unselectButton = new Button(width - guiWidth + 25, 320, 150, 40, "Unselect");
                     }
                   }
                 }

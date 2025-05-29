@@ -70,13 +70,10 @@ abstract class Unit {
 
   void move(int newX, int newY) {
     if (fuel > 0) {
-      int oldX = gridX;
-      int oldY = gridY;
       setGridX(newX);
       setGridY(newY);
       setMoved(true);
       setFuel(fuel - 1);
-      gameLog.addMessage(getType() + " moved to (" + newX + ", " + newY + ")");
     }
   }
 
@@ -84,7 +81,6 @@ abstract class Unit {
     if (ammo > 0) {
       int damage = getEffectiveDamage();
       target.setHealth(target.getHealth() - damage);
-      gameLog.addMessage(getType() + " attacked " + target.getType() + " at (" + target.getGridX() + ", " + target.getGridY() + ")");
       if (target.getHealth() <= 0) {
         target.setHealth(0);
         setMorale(morale + 40);
@@ -109,8 +105,8 @@ abstract class Unit {
   }
 }
 
-// ----- Infantry -----
 class InfantryUnit extends Unit {
+
   InfantryUnit(Player owner, int gridX, int gridY) {
     super(owner, gridX, gridY);
     setAttackPower(25);
@@ -138,8 +134,8 @@ class InfantryUnit extends Unit {
   String getType() { return "Infantry"; }
 }
 
-// ----- Cavalry -----
 class CavalryUnit extends Unit {
+
   CavalryUnit(Player owner, int gridX, int gridY) {
     super(owner, gridX, gridY);
     setAttackPower(35);
@@ -167,8 +163,8 @@ class CavalryUnit extends Unit {
   String getType() { return "Cavalry"; }
 }
 
-// ----- Artillery -----
 class ArtilleryUnit extends Unit {
+
   ArtilleryUnit(Player owner, int gridX, int gridY) {
     super(owner, gridX, gridY);
     setAttackPower(80);
@@ -200,7 +196,6 @@ class ArtilleryUnit extends Unit {
   @Override
   void attack(Unit target) {
     if (getAmmo() > 0) {
-      gameLog.addMessage(getType() + " attacked " + target.getType() + " at (" + target.getGridX() + ", " + target.getGridY() + ")");
       if (target.getType().equals("Cavalry") || target.getType().equals("Artillery")) {
         target.setHealth(target.getHealth() - getAttackPower());
       } else {
@@ -219,8 +214,8 @@ class ArtilleryUnit extends Unit {
   }
 }
 
-// ----- Logistics -----
 class LogisticsUnit extends Unit {
+
   LogisticsUnit(Player owner, int gridX, int gridY) {
     super(owner, gridX, gridY);
     setAttackPower(15);
@@ -250,7 +245,6 @@ class LogisticsUnit extends Unit {
   @Override
   void attack(Unit target) {
     if (getAmmo() > 0) {
-      gameLog.addMessage(getType() + " supplied " + target.getType() + " at (" + target.getGridX() + ", " + target.getGridY() + ")");
       if (target.getHealth() < target.getBaseMaxHealth()) {
         int heal = getEffectiveDamage();
         target.setHealth(target.getHealth() + heal);
@@ -267,8 +261,8 @@ class LogisticsUnit extends Unit {
   }
 }
 
-// ----- Drone -----
 class DroneUnit extends Unit {
+
   DroneUnit(Player owner, int gridX, int gridY) {
     super(owner, gridX, gridY);
     setAttackPower(60);
@@ -294,7 +288,7 @@ class DroneUnit extends Unit {
   int getAttackRange() { return 7; }
 
   @Override
-  String getType() { return "Drone"; }
+  String getType() { return "Drone Unit"; }
 
   @Override
   void attack(Unit target) {
@@ -307,7 +301,6 @@ class DroneUnit extends Unit {
       }
       if (actualProbability < probability) {
         target.setHealth(target.getHealth() - damage);
-        gameLog.addMessage(getType() + " attacked " + target.getType() + " at (" + target.getGridX() + ", " + target.getGridY() + ")");
         if (target.getHealth() <= 0) {
           target.setHealth(0);
           setMorale(getMorale() + 40);

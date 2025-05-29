@@ -86,6 +86,13 @@ class MainGame {
             unselectButton.display();
           }
           endTurnButton.display();
+          fill(180);
+          rect(width - guiWidth, height - 300, 150, 100);
+          fill(0);
+          textAlign(CENTER, CENTER);
+          textSize(16);
+          text("hi", 50, 50);
+          // above will be where action GUI is
           fill(0);
           textAlign(LEFT, TOP);
           textSize(20);

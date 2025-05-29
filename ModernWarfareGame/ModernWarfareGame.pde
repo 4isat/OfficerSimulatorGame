@@ -1,4 +1,6 @@
 MainGame game;
+GameLog gameLog;
+
 
 void settings() {
   fullScreen();
@@ -9,7 +11,14 @@ void setup() {
 }
 
 void draw() {
-  game.display();
+  // Your existing drawing code...
+
+  // Draw the log panel on the right
+  float logPanelX = 800;  // if your board is 800px wide (10 tiles * 80px)
+  float logPanelWidth = width - logPanelX;
+  float logPanelHeight = height;
+  
+  gameLog.display(logPanelX, 0, logPanelWidth, logPanelHeight);
 }
 
 void mousePressed() {
@@ -29,7 +38,7 @@ class MainGame {
   private Button endTurnButton;
   private Button returnToMenuButton;
   private final int guiWidth = 200;
-
+  
   MainGame() {
     player1 = new Player("Player 1", true);
     enemy = new Player("Enemy", false);
@@ -208,7 +217,7 @@ class MainGame {
     textSize(18);
     textAlign(LEFT, TOP);
     text("Unit Info", width - guiWidth + 10, 10);
-    text("Type: Infantry", width - guiWidth + 10, 40);
+    text("Type: " + unit.getType(), width - guiWidth + 10, 40);
     text("Health: " + unit.getHealth() + " / " + unit.getEffectiveMaxHealth(), width - guiWidth + 10, 70);
     text("Morale: " + unit.getMorale(), width - guiWidth + 10, 100);
     text("Effective Dmg: " + unit.getEffectiveDamage(), width - guiWidth + 10, 130);

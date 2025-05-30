@@ -2,6 +2,11 @@ abstract class Level {
   private Tile[][] grid;
   private int cols, rows;
   private float tileSize;
+  private String lastAction;
+  
+  String getLastAction(){
+    return lastAction;
+  }
 
   Level(int cols, int rows, int availableWidth, int availableHeight) {
     this.cols = cols;
@@ -95,7 +100,7 @@ abstract class Level {
             grid[unit.getGridX()][unit.getGridY()].setUnit(null);
             unit.move(i, j);
             grid[i][j].setUnit(unit);
-            println("Moved " + unit.getType() + " to " + i + "," + j);
+            lastAction = "Moved " + unit.getType() + " to " + i + "," + j;
             clearHighlights();
             highlightRange(unit, "move");
             return true;
@@ -103,10 +108,12 @@ abstract class Level {
                      grid[i][j].getUnit() != null && !unit.hasAttacked()) {
             Unit target = grid[i][j].getUnit();
             unit.attack(target);
-            println("Your " + unit.getType() + " at " + unit.gridX + "," + unit.gridY + " deals " + unit.getEffectiveDamage() + " damage to enemy " + target.getType() + " " + target.gridX + "," + target.gridY);
+            if (!unit.getType().equals("Supply")){
+              lastAction = "Your " + unit.getType() + " at " + unit.gridX + "," + unit.gridY + " deals " + unit.getEffectiveDamage() + " damage to enemy " + target.getType() + " " + target.gridX + "," + target.gridY;
+            }
             boolean killed = target.getHealth() <= 0;
             if (killed) {
-              println("Enemy " + target.getType() + " at " + target.gridX + "," + target.gridY + " destroyed by " + unit.getType());
+              lastAction = "Enemy " + target.getType() + " at " + target.gridX + "," + target.gridY + " destroyed by " + unit.getType();
               for (int x = 0; x < cols; x++) {
                 for (int y = 0; y < rows; y++) {
                   Unit other = grid[x][y].getUnit();

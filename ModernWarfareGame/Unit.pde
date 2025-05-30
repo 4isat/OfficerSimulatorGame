@@ -272,7 +272,7 @@ class LogisticsUnit extends Unit {
 class DroneUnit extends Unit {
 
   private int damageDealt;
-  private boolean didHit = false;
+  private boolean didHit = true;
   
   DroneUnit(Player owner, int gridX, int gridY) {
     super(owner, gridX, gridY);
@@ -304,14 +304,14 @@ class DroneUnit extends Unit {
   @Override
   void attack(Unit target) {
     if (getAmmo() > 0) {
-      int damage = getEffectiveDamage();
       double probability = 1;
       double actualProbability = Math.random();
       if (target.getType().equals("Infantry")) {
-        probability = 0.6;
+        probability = 0.5;
       }
       if (actualProbability < probability) {
         didHit = true;
+        int damage = getEffectiveDamage();
         target.setHealth(target.getHealth() - damage);
         if (target.getHealth() <= 0) {
           target.setHealth(0);
@@ -322,7 +322,7 @@ class DroneUnit extends Unit {
         }
       }
       else{
-        damageDealt = 0;        
+        didHit = false;   
       }
       setAmmo(getAmmo() - 1);
       setAttacked(true);
@@ -333,7 +333,6 @@ class DroneUnit extends Unit {
   int getEffectiveDamage(){
     if (didHit){
       return (int)(this.getAttackPower() * (this.getMorale() / 100.0));
-      didHit 
     }
     else{
       return 0;

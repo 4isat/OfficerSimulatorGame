@@ -87,11 +87,13 @@ class MainGame {
           }
           endTurnButton.display();
           fill(180);
-          rect(width - guiWidth, height - 300, 150, 100);
+          rect(width - guiWidth - 275, height - 300, 450, 100);
           fill(0);
           textAlign(CENTER, CENTER);
           textSize(16);
-          text("hi", 50, 50);
+          if (currentLevel.getLastAction() != null){
+            text(currentLevel.getLastAction(), width - guiWidth - 75, height - 250);
+          }
           // above will be where action GUI is
           fill(0);
           textAlign(LEFT, TOP);
@@ -113,6 +115,11 @@ class MainGame {
     fill(0);
     textSize(28);
     text("Start Training Camp", width / 2, height / 2);
+    fill(50, 200, 50);
+    rect(width / 2 - 150, height / 2 + 60, 300, 80);
+    fill(0);
+    textSize(28);
+    text("Start First Skirmish", width / 2, height / 2 + 100);
   }
 
   void displayVictoryScreen() {
@@ -128,6 +135,10 @@ class MainGame {
     if (showMenu) {
       if (mx >= width / 2 - 150 && mx <= width / 2 + 150 && my >= height / 2 - 40 && my <= height / 2 + 40) {
         startTrainingCamp();
+        showMenu = false;
+      }
+      if (mx >= width / 2 - 150 && mx <= width / 2 + 150 && my >= height / 2 + 60 && my <= height / 2 + 140) {
+        startFirstSkirmish();
         showMenu = false;
       }
     } else {
@@ -182,6 +193,12 @@ class MainGame {
 
   void startTrainingCamp() {
     currentLevel = new TrainingCampLevel(width - guiWidth, height);
+    currentLevel.placeInitialUnits(player1, enemy);
+    victoryAchieved = false;
+  }
+  
+  void startFirstSkirmish() {
+    currentLevel = new FirstSkirmish(width - guiWidth, height);
     currentLevel.placeInitialUnits(player1, enemy);
     victoryAchieved = false;
   }

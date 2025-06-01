@@ -67,6 +67,10 @@ class TrainingCampLevel extends Level {
     return """
     Learn the basics: move infantry units and destroy the enemies.
     Click on a unit to move them, toggle mode and click on an enemy to attack.
+    Artillery do high damage to buildings and vehicles, low damage to troops.
+    Drones are countered by infantry (sometimes). 
+    Buildings and forests offer shelter and protection to units (grey and green tiles).
+    Supply units resupply other units' ammo, fuel and health.
     """;
   }
 }

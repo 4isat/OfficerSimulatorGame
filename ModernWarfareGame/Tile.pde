@@ -5,19 +5,47 @@ class Tile {
   private boolean isHighlighted;
   private color highlightColor;
   private float size;
+  private int structureHealth;
+  private int baseStructureHealth;
 
-  Tile(int x, int y, String terrain, float size) {
-    this.gridX = x;
-    this.gridY = y;
+Tile(int gridX, int gridY, String terrain, float size) {
+    this.gridX = gridX;
+    this.gridY = gridY;
     this.terrain = terrain;
     this.unit = null;
     this.isHighlighted = false;
     this.highlightColor = color(255, 255, 0);
     this.size = size;
-  }
+
+    if (terrain.equals("S")) {
+        baseStructureHealth = 100;
+        structureHealth = 100;
+    } else if (terrain.equals("T")) {
+        baseStructureHealth = 200;
+        structureHealth = 200;
+    } else {
+        baseStructureHealth = 0;
+        structureHealth = 0;
+    }
+    if (this.isDestructible() && structureHealth < baseStructureHealth) {
+      println(gridX + gridY + "is damage and has" + structureHealth); 
+    }
+}
+
   int getGridX() { return gridX; }
   int getGridY() { return gridY; }
-  String getTerrain() { return terrain; }
+  int getHealth(){ return structureHealth; }
+  String getTerrain() {
+    if (terrain.equals("T")){
+      return "building";
+    }
+    else if (terrain.equals("S")){
+      return "forest";
+    }
+    else{
+      return terrain;
+    }
+  }
   Unit getUnit() { return unit; }
   boolean isHighlighted() { return isHighlighted; }
   color getHighlightColor() { return highlightColor; }
@@ -29,6 +57,7 @@ class Tile {
   void setHighlighted(boolean highlighted) { this.isHighlighted = highlighted; }
   void setHighlightColor(color highlightColor) { this.highlightColor = highlightColor; }
   void setSize(float size) { this.size = size; }
+  void setHealth(int x) { this.structureHealth = x; }
 
   void display() {
     float px = gridX * size;
@@ -80,6 +109,24 @@ class Tile {
       text(actionsLeft, px + size / 2, py + size / 3);
       text(unit.getType(), px + size / 2, py + size / 2);
     }
+  }
+
+  boolean isDestructible() {
+      return baseStructureHealth > 0;
+  }
+  
+  int getStructureHealth() {
+      return structureHealth;
+  }
+  
+  void applyDamage(int damage) {
+      if (isDestructible()) {
+          structureHealth -= damage;
+          if (structureHealth <= 0) {
+              structureHealth = 0;
+              terrain = "P";
+          }
+      }
   }
 
   boolean contains(float mx, float my) {

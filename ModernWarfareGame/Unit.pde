@@ -93,6 +93,10 @@ abstract class Unit {
     }
   }
 
+  void consumeAmmo(){
+   this.ammo -= 1; 
+  }
+
   void updateEffectiveHealth() {
     int effectiveMax = getEffectiveMaxHealth();
     if (health > effectiveMax) {

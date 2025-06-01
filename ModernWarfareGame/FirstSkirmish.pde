@@ -3,18 +3,22 @@ class FirstSkirmish extends Level {
   private ArrayList<Unit> enemyList = new ArrayList<Unit>();
 
   private String[][] mapData = {
-    {"P", "P", "T", "B", "B", "B", "B", "T", "P", "P"},
-    {"P", "P", "B", "S", "S", "S", "S", "B", "P", "P"},
-    {"P", "P", "P", "P", "P", "P", "P", "P", "P", "P"},
-    {"P", "P", "P", "P", "P", "P", "P", "P", "P", "P"},
-    {"P", "P", "P", "P", "P", "P", "P", "P", "P", "P"},
-    {"P", "P", "T", "T", "P", "P", "T", "T", "P", "P"},
-    {"P", "P", "T", "B", "B", "B", "T", "T", "P", "P"},
-    {"P", "P", "P", "P", "P", "P", "P", "P", "P", "P"}
+    {"P", "P", "T", "B", "B", "B", "B", "B", "B", "T", "T", "P", "P", "P", "P", "P"},
+    {"P", "P", "B", "S", "S", "S", "S", "S", "S", "B", "B", "P", "P", "P", "T", "P"},
+    {"P", "P", "P", "P", "P", "P", "P", "P", "P", "P", "P", "P", "P", "P", "P", "P"},
+    {"P", "P", "T", "T", "P", "P", "T", "T", "P", "P", "T", "T", "P", "P", "P", "P"},
+    {"P", "P", "T", "B", "B", "B", "T", "T", "B", "B", "B", "T", "P", "P", "P", "P"},
+    {"P", "P", "P", "P", "P", "P", "P", "P", "P", "P", "P", "P", "P", "P", "P", "P"},
+    {"P", "P", "P", "P", "P", "P", "P", "P", "P", "P", "P", "P", "P", "P", "P", "P"},
+    {"P", "P", "T", "T", "P", "P", "T", "T", "P", "P", "T", "T", "P", "P", "P", "P"},
+    {"P", "P", "T", "B", "B", "B", "T", "T", "B", "B", "B", "T", "P", "P", "P", "P"},
+    {"P", "P", "P", "P", "P", "P", "P", "P", "P", "P", "P", "P", "P", "P", "P", "P"},
+    {"P", "P", "P", "P", "P", "P", "P", "P", "P", "P", "P", "P", "P", "P", "P", "P"},
+    {"P", "P", "P", "P", "P", "P", "P", "P", "P", "P", "P", "P", "P", "P", "P", "P"}
   };
 
   FirstSkirmish(int availableWidth, int availableHeight) {
-    super(10, 8, availableWidth, availableHeight);
+    super(16, 12, availableWidth, availableHeight);  // update grid size
     setupMap();
   }
 
@@ -44,29 +48,38 @@ class FirstSkirmish extends Level {
   }
 
   void placeInitialUnits(Player player, Player enemy) {
+    // Player units
     getGrid()[1][1].setUnit(new InfantryUnit(player, 1, 1));
     getGrid()[1][3].setUnit(new CavalryUnit(player, 1, 3));
     getGrid()[2][2].setUnit(new ArtilleryUnit(player, 2, 2));
     getGrid()[1][2].setUnit(new LogisticsUnit(player, 1, 2));
     getGrid()[0][2].setUnit(new DroneUnit(player, 0, 2));
 
-    Unit enemy1 = new InfantryUnit(enemy, 8, 1);
-    getGrid()[8][1].setUnit(enemy1);
+    // Enemy units - more variety and spread out
+    Unit enemy1 = new InfantryUnit(enemy, 14, 1);
+    getGrid()[14][1].setUnit(enemy1);
     enemyList.add(enemy1);
 
-    Unit enemy2 = new InfantryUnit(enemy, 8, 3);
-    getGrid()[8][3].setUnit(enemy2);
+    Unit enemy2 = new CavalryUnit(enemy, 13, 3);
+    getGrid()[13][3].setUnit(enemy2);
     enemyList.add(enemy2);
 
-    Unit enemy3 = new InfantryUnit(enemy, 7, 2);
-    getGrid()[7][2].setUnit(enemy3);
+    Unit enemy3 = new ArtilleryUnit(enemy, 12, 2);
+    getGrid()[12][2].setUnit(enemy3);
     enemyList.add(enemy3);
+
+    Unit enemy4 = new LogisticsUnit(enemy, 14, 4);
+    getGrid()[14][4].setUnit(enemy4);
+    enemyList.add(enemy4);
+
+    Unit enemy5 = new DroneUnit(enemy, 13, 5);
+    getGrid()[13][5].setUnit(enemy5);
+    enemyList.add(enemy5);
   }
 
   String getObjective() {
     return """
-    Learn the basics: move infantry units and destroy the enemies.
-    Click on a unit to move them, toggle mode and click on an enemy to attack.
+    Welcome to the First Skirmish! Defeat all other units
     """;
   }
 }

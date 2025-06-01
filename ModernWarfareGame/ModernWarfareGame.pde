@@ -98,6 +98,9 @@ class MainGame {
           fill(0);
           textAlign(LEFT, TOP);
           textSize(20);
+          fill(180, 167);
+          rect(0, 0, 800, 200);
+          fill(0);
           text(currentLevel.getObjective(), 10, 10);
         }
       }

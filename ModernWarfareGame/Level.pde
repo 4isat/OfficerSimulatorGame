@@ -91,29 +91,65 @@ abstract class Level {
     }
   }
 
-  boolean handleTileAction(float mx, float my, Unit unit, String mode) {
-    for (int i = 0; i < cols; i++) {
-      for (int j = 0; j < rows; j++) {
-        if (grid[i][j].contains(mx, my)) {
-          int dist = abs(unit.getGridX() - i) + abs(unit.getGridY() - j);
-          if (mode.equals("move") && dist <= unit.getRange() && grid[i][j].getUnit() == null && !unit.hasMoved()) {
-            grid[unit.getGridX()][unit.getGridY()].setUnit(null);
-            unit.move(i, j);
-            grid[i][j].setUnit(unit);
-            lastAction = "Moved " + unit.getType() + " to " + i + "," + j;
-            clearHighlights();
-            highlightRange(unit, "move");
-            return true;
-          } else if (mode.equals("attack") && dist <= unit.getAttackRange() &&
-                     grid[i][j].getUnit() != null && !unit.hasAttacked()) {
-            Unit target = grid[i][j].getUnit();
+boolean handleTileAction(float mx, float my, Unit unit, String mode) {
+  for (int i = 0; i < cols; i++) {
+    for (int j = 0; j < rows; j++) {
+      if (grid[i][j].contains(mx, my)) {
+        int dist = abs(unit.getGridX() - i) + abs(unit.getGridY() - j);
+        if (unit.getType().equals("Artillery")) {
+          if (mode.equals("move") && unit.hasAttacked()) {
+            lastAction = "Artillery cannot move after attacking!";
+            return false;
+          }
+          if (mode.equals("attack") && unit.hasMoved()) {
+            lastAction = "Artillery cannot attack after moving!";
+            return false;
+          }
+        }
+
+        if (mode.equals("move") && dist <= unit.getRange() && grid[i][j].getUnit() == null && !unit.hasMoved()) {
+          grid[unit.getGridX()][unit.getGridY()].setUnit(null);
+          unit.move(i, j);
+          grid[i][j].setUnit(unit);
+          lastAction = "Moved " + unit.getType() + " to " + i + "," + j;
+          clearHighlights();
+          highlightRange(unit, "move");
+          return true;
+
+        } else if (mode.equals("attack") && dist <= unit.getAttackRange() &&
+                   grid[i][j].getUnit() != null && !unit.hasAttacked()) {
+
+          Unit target = grid[i][j].getUnit();
+          Tile targetTile = grid[i][j];
+          unit.consumeAmmo();
+
+          if (targetTile.getTerrain().equals("building") || targetTile.getTerrain().equals("forest")) {
+            int damageToTile;
+            if (unit.getType().equals("Artillery")) {
+              damageToTile = 100; 
+            } else {
+              damageToTile = unit.getEffectiveDamage();
+            }
+            targetTile.setHealth(targetTile.getHealth() - damageToTile);
+            lastAction = unit.getType() + " damaged " + targetTile.getTerrain() + " tile at " + i + "," + j + "\n" +
+                         " for " + damageToTile + " damage (remaining tile HP: " + targetTile.getHealth() + ")";
+
+            if (targetTile.getHealth() <= 0) {
+              targetTile.setTerrain("P"); 
+              targetTile.setHealth(0);
+              lastAction += " — tile destroyed!";
+            }
+          } else {
             unit.attack(target);
-            if (!unit.getType().equals("Supply")){
-              lastAction = "Your " + unit.getType() + " at " + unit.gridX + "," + unit.gridY + " deals " + unit.getEffectiveDamage() + " damage to enemy " + target.getType() + " " + target.gridX + "," + target.gridY;
+            if (!unit.getType().equals("Supply")) {
+              lastAction = "Your " + unit.getType() + " at " + unit.getGridX() + "," + unit.getGridY() + 
+                           " deals " + unit.getEffectiveDamage() + " damage to enemy \n" + target.getType() + 
+                           " at " + target.getGridX() + "," + target.getGridY();
             }
             boolean killed = target.getHealth() <= 0;
             if (killed) {
-              lastAction = "Enemy " + target.getType() + " at " + target.gridX + "," + target.gridY + " destroyed by " + unit.getType();
+              lastAction = "Enemy " + target.getType() + " at " + target.getGridX() + "," + target.getGridY() + 
+                           " destroyed by " + unit.getType();
               for (int x = 0; x < cols; x++) {
                 for (int y = 0; y < rows; y++) {
                   Unit other = grid[x][y].getUnit();
@@ -131,14 +167,18 @@ abstract class Level {
               }
               grid[i][j].setUnit(null);
             }
-            clearHighlights();
-            return true;
           }
+          clearHighlights();
+          return true;
         }
       }
     }
-    return false;
   }
+  return false;
+}
+
+
+
 
   void resetUnitActions(Player player) {
     for (int i = 0; i < cols; i++) {

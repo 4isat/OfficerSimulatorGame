@@ -215,6 +215,7 @@ class ArtilleryUnit extends Unit {
         target.setMorale(target.getMorale() - 20);
         if (target.getMorale() < 0) target.setMorale(0);
       }
+      
       setAttacked(true);
       setAmmo(getAmmo() - 1);
     }

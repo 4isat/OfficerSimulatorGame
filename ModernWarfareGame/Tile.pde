@@ -18,8 +18,8 @@ Tile(int gridX, int gridY, String terrain, float size) {
     this.size = size;
 
     if (terrain.equals("S")) {
-        baseStructureHealth = 100;
-        structureHealth = 100;
+        baseStructureHealth = 75;
+        structureHealth = 75;
     } else if (terrain.equals("T")) {
         baseStructureHealth = 200;
         structureHealth = 200;

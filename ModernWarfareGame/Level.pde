@@ -106,23 +106,41 @@ boolean handleTileAction(float mx, float my, Unit unit, String mode) {
             return false;
           }
         }
-
         if (mode.equals("move") && dist <= unit.getRange() && grid[i][j].getUnit() == null && !unit.hasMoved()) {
-          grid[unit.getGridX()][unit.getGridY()].setUnit(null);
-          unit.move(i, j);
-          grid[i][j].setUnit(unit);
-          lastAction = "Moved " + unit.getType() + " to " + i + "," + j;
-          clearHighlights();
-          highlightRange(unit, "move");
-          return true;
-
+          if (grid[i][j].getTerrain().equals("forest") || grid[i][j].getTerrain().equals("building")){
+            System.out.println("clicked other tile");
+            if (unit.getType().equals("Artillery") || unit.getType().equals("Cavalry")){
+              lastAction = "Cannot move vehicle units to buildings/forests";
+            }
+            else{
+              grid[unit.getGridX()][unit.getGridY()].setUnit(null);
+              unit.move(i, j);
+              grid[i][j].setUnit(unit);
+              lastAction = "Moved " + unit.getType() + " to " + i + "," + j;
+              clearHighlights();
+              highlightRange(unit, "move");
+              return true;
+            }
+          }
+          else{
+            grid[unit.getGridX()][unit.getGridY()].setUnit(null);
+            unit.move(i, j);
+            grid[i][j].setUnit(unit);
+            lastAction = "Moved " + unit.getType() + " to " + i + "," + j;
+            clearHighlights();
+            highlightRange(unit, "move");
+            return true;
+          }
         } else if (mode.equals("attack") && dist <= unit.getAttackRange() &&
                    grid[i][j].getUnit() != null && !unit.hasAttacked()) {
-
           Unit target = grid[i][j].getUnit();
           Tile targetTile = grid[i][j];
+          if (unit.getType().equals("Artillery")){
+            //essentially make a loop that targets the adjacent tiles (1 attack radius). All enemy units should receive damage in these tiles, with the splash being 15 damage.
+            //Use a similar method as the tile method to set the health of the enemy units in the splash radius lower by 15. If they are in the building or forest, they should
+            //receive 0 damage as these tiles shield them from shrapnel. 
+          }
           unit.consumeAmmo();
-
           if (targetTile.getTerrain().equals("building") || targetTile.getTerrain().equals("forest")) {
             int damageToTile;
             if (unit.getType().equals("Artillery")) {
@@ -133,7 +151,6 @@ boolean handleTileAction(float mx, float my, Unit unit, String mode) {
             targetTile.setHealth(targetTile.getHealth() - damageToTile);
             lastAction = unit.getType() + " damaged " + targetTile.getTerrain() + " tile at " + i + "," + j + "\n" +
                          " for " + damageToTile + " damage (remaining tile HP: " + targetTile.getHealth() + ")";
-
             if (targetTile.getHealth() <= 0) {
               targetTile.setTerrain("P"); 
               targetTile.setHealth(0);
@@ -176,9 +193,6 @@ boolean handleTileAction(float mx, float my, Unit unit, String mode) {
   }
   return false;
 }
-
-
-
 
   void resetUnitActions(Player player) {
     for (int i = 0; i < cols; i++) {

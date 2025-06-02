@@ -3,13 +3,13 @@ class TrainingCampLevel extends Level {
   private ArrayList<Unit> enemyList = new ArrayList<Unit>();
 
   private String[][] mapData = {
-    {"P", "P", "T", "T", "B", "B", "T", "T", "P", "P"},
+    {"P", "P", "T", "T", "S", "S", "T", "T", "P", "P"},
     {"P", "P", "T", "S", "S", "S", "T", "T", "P", "P"},
     {"P", "P", "P", "P", "P", "P", "P", "P", "P", "P"},
     {"P", "P", "P", "P", "P", "P", "P", "P", "P", "P"},
     {"P", "P", "P", "P", "P", "P", "P", "P", "P", "P"},
     {"P", "P", "T", "T", "P", "P", "T", "T", "P", "P"},
-    {"P", "P", "T", "B", "B", "B", "T", "T", "P", "P"},
+    {"P", "P", "T", "S", "S", "S", "T", "T", "P", "P"},
     {"P", "P", "P", "P", "P", "P", "P", "P", "P", "P"}
   };
 

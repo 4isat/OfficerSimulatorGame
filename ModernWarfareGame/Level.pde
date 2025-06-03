@@ -92,6 +92,7 @@ abstract class Level {
   }
 
 boolean handleTileAction(float mx, float my, Unit unit, String mode) {
+  lastAction = "";
   for (int i = 0; i < cols; i++) {
     for (int j = 0; j < rows; j++) {
       if (grid[i][j].contains(mx, my)) {
@@ -133,13 +134,23 @@ boolean handleTileAction(float mx, float my, Unit unit, String mode) {
           }
         } else if (mode.equals("attack") && dist <= unit.getAttackRange() &&
                    grid[i][j].getUnit() != null && !unit.hasAttacked()) {
-          Unit target = grid[i][j].getUnit();
-          Tile targetTile = grid[i][j];
           if (unit.getType().equals("Artillery")){
+            if(grid[i-1][j].getUnit() != null){
+              Unit target = grid[i-1][j].getUnit();
+              Tile targetTile = grid[i-1][j];
+              int splashDamage = 15;
+              if (!targetTile.getTerrain().equals("building") && !targetTile.getTerrain().equals("forest")){
+                target.setHealth(target.getHealth() - splashDamage);
+                lastAction += "Splashed " + target.getType() + " at " + target.getGridX() + "," + target.getGridY() + " \n";
+              }
+            }
+            // Right now, I just need this to loop to directly adjacent tiles
             //essentially make a loop that targets the adjacent tiles (1 attack radius). All enemy units should receive damage in these tiles, with the splash being 15 damage.
             //Use a similar method as the tile method to set the health of the enemy units in the splash radius lower by 15. If they are in the building or forest, they should
             //receive 0 damage as these tiles shield them from shrapnel. 
           }
+          Unit target = grid[i][j].getUnit();
+          Tile targetTile = grid[i][j];
           unit.consumeAmmo();
           if (targetTile.getTerrain().equals("building") || targetTile.getTerrain().equals("forest")) {
             int damageToTile;
@@ -159,7 +170,7 @@ boolean handleTileAction(float mx, float my, Unit unit, String mode) {
           } else {
             unit.attack(target);
             if (!unit.getType().equals("Supply")) {
-              lastAction = "Your " + unit.getType() + " at " + unit.getGridX() + "," + unit.getGridY() + 
+              lastAction += "Your " + unit.getType() + " at " + unit.getGridX() + "," + unit.getGridY() + 
                            " deals " + unit.getEffectiveDamage() + " damage to enemy \n" + target.getType() + 
                            " at " + target.getGridX() + "," + target.getGridY();
             }

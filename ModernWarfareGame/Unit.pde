@@ -276,7 +276,6 @@ class LogisticsUnit extends Unit {
 
 class DroneUnit extends Unit {
 
-  private int damageDealt;
   private boolean didHit = true;
   
   DroneUnit(Player owner, int gridX, int gridY) {

@@ -14,7 +14,7 @@ class TrainingCampLevel extends Level {
   };
 
   TrainingCampLevel(int availableWidth, int availableHeight) {
-    super(10, 8, availableWidth, availableHeight);
+    super(10, 8, availableWidth, availableHeight-55);
     setupMap();
   }
 
@@ -61,6 +61,10 @@ class TrainingCampLevel extends Level {
     Unit enemy3 = new InfantryUnit(enemy, 7, 2);
     getGrid()[7][2].setUnit(enemy3);
     enemyList.add(enemy3);
+    
+    Unit enemy4 = new InfantryUnit(enemy, 8, 2);
+    getGrid()[8][2].setUnit(enemy4);
+    enemyList.add(enemy4);
   }
 
   String getObjective() {

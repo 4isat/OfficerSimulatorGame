@@ -87,7 +87,7 @@ class MainGame {
           }
           endTurnButton.display();
           fill(180);
-          rect(width - guiWidth - 275, height - 300, 450, 100);
+          rect(width - guiWidth - 275, height - 300, 450, 150);
           fill(0);
           textAlign(CENTER, CENTER);
           textSize(16);

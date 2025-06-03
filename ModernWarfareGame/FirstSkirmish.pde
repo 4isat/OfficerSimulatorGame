@@ -18,7 +18,7 @@ class FirstSkirmish extends Level {
   };
 
   FirstSkirmish(int availableWidth, int availableHeight) {
-    super(16, 12, availableWidth, availableHeight);  // update grid size
+    super(16, 12, availableWidth, availableHeight-55);  // adjust for taskbar at bottom on some computers
     setupMap();
   }
 
@@ -48,14 +48,12 @@ class FirstSkirmish extends Level {
   }
 
   void placeInitialUnits(Player player, Player enemy) {
-    // Player units
     getGrid()[1][1].setUnit(new InfantryUnit(player, 1, 1));
     getGrid()[1][3].setUnit(new CavalryUnit(player, 1, 3));
     getGrid()[2][2].setUnit(new ArtilleryUnit(player, 2, 2));
     getGrid()[1][2].setUnit(new LogisticsUnit(player, 1, 2));
     getGrid()[0][2].setUnit(new DroneUnit(player, 0, 2));
 
-    // Enemy units - more variety and spread out
     Unit enemy1 = new InfantryUnit(enemy, 14, 1);
     getGrid()[14][1].setUnit(enemy1);
     enemyList.add(enemy1);

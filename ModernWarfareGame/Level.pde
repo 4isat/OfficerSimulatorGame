@@ -107,7 +107,7 @@ boolean handleTileAction(float mx, float my, Unit unit, String mode) {
             return false;
           }
         }
-        if (mode.equals("move") && dist <= unit.getRange() && grid[i][j].getUnit() == null && !unit.hasMoved()) {
+        if (mode.equals("move") && dist <= unit.getRange() && grid[i][j].getUnit() == null && !unit.hasMoved() && unit.getFuel()>0) {
           if (grid[i][j].getTerrain().equals("forest") || grid[i][j].getTerrain().equals("building")){
             System.out.println("clicked other tile");
             if (unit.getType().equals("Artillery") || unit.getType().equals("Cavalry")){
@@ -133,22 +133,44 @@ boolean handleTileAction(float mx, float my, Unit unit, String mode) {
             return true;
           }
         } else if (mode.equals("attack") && dist <= unit.getAttackRange() &&
-                   grid[i][j].getUnit() != null && !unit.hasAttacked()) {
-          if (unit.getType().equals("Artillery")){
-            if(grid[i-1][j].getUnit() != null){
-              Unit target = grid[i-1][j].getUnit();
-              Tile targetTile = grid[i-1][j];
-              int splashDamage = 15;
-              if (!targetTile.getTerrain().equals("building") && !targetTile.getTerrain().equals("forest")){
-                target.setHealth(target.getHealth() - splashDamage);
-                lastAction += "Splashed " + target.getType() + " at " + target.getGridX() + "," + target.getGridY() + " \n";
+                   grid[i][j].getUnit() != null && !unit.hasAttacked() && unit.getAmmo() > 0) {
+            if (unit.getType().equals("Artillery")){
+              int k = 0;
+              while (k < 4){
+                int L = i;
+                int m = j;
+                if (k == 0){
+                  L = i - 1;
+                }
+                if (k == 1){
+                  L = i + 1;
+                }
+                if (k == 2){
+                  m = j - 1;
+                }
+                if (k == 3){
+                  m = j + 1;
+                }
+                if (L >= 0 && L < cols){
+                  if (m >= 0 && m < cols){
+                    if(grid[L][m].getUnit() != null){
+                      Unit target = grid[L][m].getUnit();
+                      Tile targetTile = grid[L][m];
+                      int splashDamage = 15;
+                      if (!targetTile.getTerrain().equals("building") && !targetTile.getTerrain().equals("forest")){
+                        target.setHealth(target.getHealth() - splashDamage);
+                        lastAction += "Splashed " + target.getType() + " at " + target.getGridX() + "," + target.getGridY() + " \n";
+                      }
+                    }
+                  }
+                }
+                k++;
               }
+              // Right now, I just need this to loop to directly adjacent tiles
+              //essentially make a loop that targets the adjacent tiles (1 attack radius). All enemy units should receive damage in these tiles, with the splash being 15 damage.
+              //Use a similar method as the tile method to set the health of the enemy units in the splash radius lower by 15. If they are in the building or forest, they should
+              //receive 0 damage as these tiles shield them from shrapnel. 
             }
-            // Right now, I just need this to loop to directly adjacent tiles
-            //essentially make a loop that targets the adjacent tiles (1 attack radius). All enemy units should receive damage in these tiles, with the splash being 15 damage.
-            //Use a similar method as the tile method to set the health of the enemy units in the splash radius lower by 15. If they are in the building or forest, they should
-            //receive 0 damage as these tiles shield them from shrapnel. 
-          }
           Unit target = grid[i][j].getUnit();
           Tile targetTile = grid[i][j];
           unit.consumeAmmo();
@@ -169,6 +191,7 @@ boolean handleTileAction(float mx, float my, Unit unit, String mode) {
             }
           } else {
             unit.attack(target);
+            System.out.println("attacking");
             if (!unit.getType().equals("Supply")) {
               lastAction += "Your " + unit.getType() + " at " + unit.getGridX() + "," + unit.getGridY() + 
                            " deals " + unit.getEffectiveDamage() + " damage to enemy \n" + target.getType() + 
@@ -176,7 +199,7 @@ boolean handleTileAction(float mx, float my, Unit unit, String mode) {
             }
             boolean killed = target.getHealth() <= 0;
             if (killed) {
-              lastAction = "Enemy " + target.getType() + " at " + target.getGridX() + "," + target.getGridY() + 
+              lastAction += "Enemy " + target.getType() + " at " + target.getGridX() + "," + target.getGridY() + 
                            " destroyed by " + unit.getType();
               for (int x = 0; x < cols; x++) {
                 for (int y = 0; y < rows; y++) {
@@ -202,8 +225,9 @@ boolean handleTileAction(float mx, float my, Unit unit, String mode) {
       }
     }
   }
-  return false;
+    return false;
 }
+
 
   void resetUnitActions(Player player) {
     for (int i = 0; i < cols; i++) {

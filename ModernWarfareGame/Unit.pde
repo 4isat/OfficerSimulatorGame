@@ -90,6 +90,7 @@ abstract class Unit {
       }
       setAttacked(true);
       setAmmo(ammo - 1);
+      morale += 5;
     }
   }
 
@@ -169,7 +170,7 @@ class CavalryUnit extends Unit {
 
 class ArtilleryUnit extends Unit {
   
-  private int damageDealt;
+  private int damageDealt = 80;
 
   ArtilleryUnit(Player owner, int gridX, int gridY) {
     super(owner, gridX, gridY);
@@ -204,6 +205,7 @@ class ArtilleryUnit extends Unit {
     if (getAmmo() > 0) {
       if (target.getType().equals("Cavalry") || target.getType().equals("Artillery")) {
         target.setHealth(target.getHealth() - getAttackPower());
+        damageDealt = getAttackPower();
       } else {
         target.setHealth((int)(target.getHealth() - getAttackPower() * 0.3));
         damageDealt = (int)(getAttackPower() * 0.3);
@@ -223,6 +225,7 @@ class ArtilleryUnit extends Unit {
   
   @Override
   int getEffectiveDamage(){
+    
     return damageDealt;
   }
 }
@@ -234,6 +237,8 @@ class LogisticsUnit extends Unit {
     setAttackPower(15);
     setBaseMaxHealth(80);
     setHealth(getBaseMaxHealth());
+    setFuel(20);
+    setAmmo(25);
   }
 
   @Override
@@ -268,7 +273,7 @@ class LogisticsUnit extends Unit {
       target.setAmmo(target.getAmmo() + 4);
       target.setFuel(target.getFuel() + 4);
       target.setMorale(target.getMorale() + 5);
-      setMorale(getMorale() + 5);
+      setMorale(getMorale() + 10);
       setAttacked(true);
     }
   }

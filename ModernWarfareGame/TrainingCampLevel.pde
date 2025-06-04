@@ -75,6 +75,7 @@ class TrainingCampLevel extends Level {
     Drones are countered by infantry (sometimes). 
     Buildings and forests offer shelter and protection to units (grey and green tiles).
     Supply units resupply other units' ammo, fuel and health.
+    Range units are square, your vehicle units are purple.
     """;
   }
 }

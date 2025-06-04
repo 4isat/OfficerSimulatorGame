@@ -108,10 +108,10 @@ boolean handleTileAction(float mx, float my, Unit unit, String mode) {
           }
         }
         if (mode.equals("move") && dist <= unit.getRange() && grid[i][j].getUnit() == null && !unit.hasMoved() && unit.getFuel()>0) {
-          if (grid[i][j].getTerrain().equals("forest") || grid[i][j].getTerrain().equals("building")){
+          if (grid[i][j].getTerrain().equals("building")){
             System.out.println("clicked other tile");
             if (unit.getType().equals("Artillery") || unit.getType().equals("Cavalry")){
-              lastAction = "Cannot move vehicle units to buildings/forests";
+              lastAction = "Cannot move vehicle units to buildings";
             }
             else{
               grid[unit.getGridX()][unit.getGridY()].setUnit(null);
@@ -183,7 +183,7 @@ boolean handleTileAction(float mx, float my, Unit unit, String mode) {
             }
             targetTile.setHealth(targetTile.getHealth() - damageToTile);
             lastAction = unit.getType() + " damaged " + targetTile.getTerrain() + " tile at " + i + "," + j + "\n" +
-                         " for " + damageToTile + " damage (remaining tile HP: " + targetTile.getHealth() + ")";
+                         " for " + damageToTile + " damage (remaining tile HP: " + targetTile.getHealth() + ") \n";
             if (targetTile.getHealth() <= 0) {
               targetTile.setTerrain("P"); 
               targetTile.setHealth(0);
@@ -191,11 +191,10 @@ boolean handleTileAction(float mx, float my, Unit unit, String mode) {
             }
           } else {
             unit.attack(target);
-            System.out.println("attacking");
             if (!unit.getType().equals("Supply")) {
               lastAction += "Your " + unit.getType() + " at " + unit.getGridX() + "," + unit.getGridY() + 
-                           " deals " + unit.getEffectiveDamage() + " damage to enemy \n" + target.getType() + 
-                           " at " + target.getGridX() + "," + target.getGridY();
+                           " deals " + unit.getEffectiveDamage() + " damage to\n" + target.getOwner().getName() + " " + target.getType() + 
+                           " at " + target.getGridX() + "," + target.getGridY() + " \n";
             }
             boolean killed = target.getHealth() <= 0;
             if (killed) {

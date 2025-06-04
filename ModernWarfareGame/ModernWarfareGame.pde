@@ -92,7 +92,7 @@ class MainGame {
           textAlign(CENTER, CENTER);
           textSize(16);
           if (currentLevel.getLastAction() != null){
-            text(currentLevel.getLastAction(), width - guiWidth - 75, height - 250);
+            text(currentLevel.getLastAction(), width - guiWidth - 75, height - 220);
           }
           // above will be where action GUI is
           fill(0);

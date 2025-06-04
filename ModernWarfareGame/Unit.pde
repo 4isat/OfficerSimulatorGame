@@ -151,9 +151,9 @@ class CavalryUnit extends Unit {
   @Override
   void display(float centerX, float centerY, float size) {
     if (getOwner().isHuman) {
-      fill(0, 0, 255);
+      fill(128, 0, 128);
     } else {
-      fill(255, 165, 0);
+      fill(139, 69, 19);
     }
     ellipse(centerX, centerY, size * 0.7, size * 0.7);
   }
@@ -298,7 +298,7 @@ class DroneUnit extends Unit {
     } else {
       fill(255, 0, 0);
     }
-    ellipse(centerX, centerY, size * 0.6, size * 0.6);
+    rect(centerX - size * 0.3, centerY - size * 0.3, size * 0.6, size * 0.6);
   }
 
   @Override

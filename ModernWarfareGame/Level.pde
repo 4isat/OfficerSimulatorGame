@@ -109,7 +109,6 @@ boolean handleTileAction(float mx, float my, Unit unit, String mode) {
         }
         if (mode.equals("move") && dist <= unit.getRange() && grid[i][j].getUnit() == null && !unit.hasMoved() && unit.getFuel()>0) {
           if (grid[i][j].getTerrain().equals("building")){
-            System.out.println("clicked other tile");
             if (unit.getType().equals("Artillery") || unit.getType().equals("Cavalry")){
               lastAction = "Cannot move vehicle units to buildings";
             }

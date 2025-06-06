@@ -33,8 +33,8 @@ class MainGame {
   MainGame() {
     player1 = new Player("Player 1", true);
     enemy = new Player("Enemy", false);
-    endTurnButton = new Button(width - guiWidth + 25, height - 140, 150, 40, "End Turn");
-    returnToMenuButton = new Button(width - guiWidth + 25, height - 180, 150, 40, "Return to Menu");
+    endTurnButton = new Button(width - guiWidth + 25, height - 350, 150, 40, "End Turn");
+    returnToMenuButton = new Button(width - guiWidth + 25, height - 140, 150, 40, "Return to Menu");
   }
   Player getPlayer1() { return player1; }
   void setPlayer1(Player p) { player1 = p; }
@@ -86,6 +86,7 @@ class MainGame {
             unselectButton.display();
           }
           endTurnButton.display();
+          returnToMenuButton.display();
           fill(180);
           rect(width - guiWidth - 275, height - 300, 450, 150);
           fill(0);
@@ -145,11 +146,10 @@ class MainGame {
         showMenu = false;
       }
     } else {
-      if (victoryAchieved) {
         if (returnToMenuButton.isClicked(mx, my)) {
           resetToMenu();
         }
-      } else {
+       else {
         if (selectedUnit != null && toggleButton.isClicked(mx, my)) {
           if (mode.equals("move")) {
             mode = "attack";

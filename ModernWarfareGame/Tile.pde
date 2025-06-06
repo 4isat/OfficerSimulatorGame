@@ -80,6 +80,7 @@ Tile(int gridX, int gridY, String terrain, float size) {
       stroke(highlightColor);
       strokeWeight(5);
       rect(px, py, size, size);
+      stroke(0);
       strokeWeight(1);
     }
 

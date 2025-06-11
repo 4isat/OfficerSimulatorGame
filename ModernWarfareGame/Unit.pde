@@ -7,21 +7,30 @@ abstract class Unit {
   private int morale;
   private int ammo;
   private int fuel;
+  private int ID;
 
   private boolean moved = false;
   private boolean attacked = false;
 
-  Unit(Player owner, int gridX, int gridY) {
+  Unit(Player owner, int gridX, int gridY, int ID) {
     this.owner = owner;
     this.gridX = gridX;
     this.gridY = gridY;
     this.morale = 100;
     this.ammo = 7;
     this.fuel = 10;
+    if (this.owner.getName().equals("Enemy")){
+      this.fuel = 9999;
+      this.ammo = 9999;
+    }
+    this.ID = ID;
   }
 
   Player getOwner() { return owner; }
   void setOwner(Player owner) { this.owner = owner; }
+
+  int getID() { return ID; }
+  void setID(int x) { this.ID = x; }
 
   int getGridX() { return gridX; }
   void setGridX(int x) { this.gridX = x; }
@@ -112,8 +121,8 @@ abstract class Unit {
 
 class InfantryUnit extends Unit {
 
-  InfantryUnit(Player owner, int gridX, int gridY) {
-    super(owner, gridX, gridY);
+  InfantryUnit(Player owner, int gridX, int gridY, int ID) {
+    super(owner, gridX, gridY, ID);
     setAttackPower(25);
     setBaseMaxHealth(120);
     setHealth(getBaseMaxHealth());
@@ -141,8 +150,8 @@ class InfantryUnit extends Unit {
 
 class CavalryUnit extends Unit {
 
-  CavalryUnit(Player owner, int gridX, int gridY) {
-    super(owner, gridX, gridY);
+  CavalryUnit(Player owner, int gridX, int gridY, int ID) {
+    super(owner, gridX, gridY, ID);
     setAttackPower(35);
     setBaseMaxHealth(250);
     setHealth(getBaseMaxHealth());
@@ -172,13 +181,17 @@ class ArtilleryUnit extends Unit {
   
   private int damageDealt = 80;
 
-  ArtilleryUnit(Player owner, int gridX, int gridY) {
-    super(owner, gridX, gridY);
+  ArtilleryUnit(Player owner, int gridX, int gridY, int ID) {
+    super(owner, gridX, gridY, ID);
     setAttackPower(80);
     setBaseMaxHealth(60);
     setHealth(getBaseMaxHealth());
     setFuel(6);
     setAmmo(4);
+    if (this.getOwner().getName().equals("Enemy")){
+      this.setFuel(9999);
+      this.setAmmo(9999);
+    }
   }
 
   @Override
@@ -232,13 +245,13 @@ class ArtilleryUnit extends Unit {
 
 class LogisticsUnit extends Unit {
 
-  LogisticsUnit(Player owner, int gridX, int gridY) {
-    super(owner, gridX, gridY);
+  LogisticsUnit(Player owner, int gridX, int gridY, int ID) {
+    super(owner, gridX, gridY, ID);
     setAttackPower(15);
     setBaseMaxHealth(80);
     setHealth(getBaseMaxHealth());
-    setFuel(20);
-    setAmmo(25);
+    setFuel(45);
+    setAmmo(99);
   }
 
   @Override
@@ -270,9 +283,9 @@ class LogisticsUnit extends Unit {
           target.setHealth(target.getBaseMaxHealth());
         }
       }
-      target.setAmmo(target.getAmmo() + 4);
-      target.setFuel(target.getFuel() + 4);
-      target.setMorale(target.getMorale() + 5);
+      target.setAmmo(target.getAmmo() + 15);
+      target.setFuel(target.getFuel() + 15);
+      target.setMorale(target.getMorale() + 15);
       setMorale(getMorale() + 10);
       setAttacked(true);
     }
@@ -283,12 +296,15 @@ class DroneUnit extends Unit {
 
   private boolean didHit = true;
   
-  DroneUnit(Player owner, int gridX, int gridY) {
-    super(owner, gridX, gridY);
+  DroneUnit(Player owner, int gridX, int gridY, int ID) {
+    super(owner, gridX, gridY, ID);
     setAttackPower(60);
     setBaseMaxHealth(80);
     setHealth(getBaseMaxHealth());
-    setAmmo(4);
+    if (this.getOwner().getName().equals("Enemy")){
+      this.setFuel(9999);
+      this.setAmmo(9999);
+    }
   }
 
   @Override

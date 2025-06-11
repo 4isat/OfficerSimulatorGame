@@ -91,26 +91,36 @@ abstract class Level {
     }
   }
 
-boolean handleTileAction(float mx, float my, Unit unit, String mode) {
-  lastAction = "";
-  for (int i = 0; i < cols; i++) {
-    for (int j = 0; j < rows; j++) {
-      if (grid[i][j].contains(mx, my)) {
-        int dist = abs(unit.getGridX() - i) + abs(unit.getGridY() - j);
-        if (unit.getType().equals("Artillery")) {
-          if (mode.equals("move") && unit.hasAttacked()) {
-            lastAction = "Artillery cannot move after attacking!";
-            return false;
+  boolean handleTileAction(float mx, float my, Unit unit, String mode) {
+    lastAction = "";
+    for (int i = 0; i < cols; i++) {
+      for (int j = 0; j < rows; j++) {
+        if (grid[i][j].contains(mx, my)) {
+          int dist = abs(unit.getGridX() - i) + abs(unit.getGridY() - j);
+          if (unit.getType().equals("Artillery")) {
+            if (mode.equals("move") && unit.hasAttacked()) {
+              lastAction = "Artillery cannot move after attacking!";
+              return false;
+            }
+            if (mode.equals("attack") && unit.hasMoved()) {
+              lastAction = "Artillery cannot attack after moving!";
+              return false;
+            }
           }
-          if (mode.equals("attack") && unit.hasMoved()) {
-            lastAction = "Artillery cannot attack after moving!";
-            return false;
-          }
-        }
-        if (mode.equals("move") && dist <= unit.getRange() && grid[i][j].getUnit() == null && !unit.hasMoved() && unit.getFuel()>0) {
-          if (grid[i][j].getTerrain().equals("building")){
-            if (unit.getType().equals("Artillery") || unit.getType().equals("Cavalry")){
-              lastAction = "Cannot move vehicle units to buildings";
+          if (mode.equals("move") && dist <= unit.getRange() && grid[i][j].getUnit() == null && !unit.hasMoved() && unit.getFuel()>0) {
+            if (grid[i][j].getTerrain().equals("building")){
+              if (unit.getType().equals("Artillery") || unit.getType().equals("Cavalry")){
+                lastAction = "Cannot move vehicle units to buildings";
+              }
+              else{
+                grid[unit.getGridX()][unit.getGridY()].setUnit(null);
+                unit.move(i, j);
+                grid[i][j].setUnit(unit);
+                lastAction = "Moved " + unit.getType() + " to " + i + "," + j;
+                clearHighlights();
+                highlightRange(unit, "move");
+                return true;
+              }
             }
             else{
               grid[unit.getGridX()][unit.getGridY()].setUnit(null);
@@ -121,110 +131,97 @@ boolean handleTileAction(float mx, float my, Unit unit, String mode) {
               highlightRange(unit, "move");
               return true;
             }
-          }
-          else{
-            grid[unit.getGridX()][unit.getGridY()].setUnit(null);
-            unit.move(i, j);
-            grid[i][j].setUnit(unit);
-            lastAction = "Moved " + unit.getType() + " to " + i + "," + j;
-            clearHighlights();
-            highlightRange(unit, "move");
-            return true;
-          }
-        } else if (mode.equals("attack") && dist <= unit.getAttackRange() &&
-                   grid[i][j].getUnit() != null && !unit.hasAttacked() && unit.getAmmo() > 0) {
-            if (unit.getType().equals("Artillery")){
-              int k = 0;
-              while (k < 4){
-                int L = i;
-                int m = j;
-                if (k == 0){
-                  L = i - 1;
-                }
-                if (k == 1){
-                  L = i + 1;
-                }
-                if (k == 2){
-                  m = j - 1;
-                }
-                if (k == 3){
-                  m = j + 1;
-                }
-                if (L >= 0 && L < cols){
-                  if (m >= 0 && m < cols){
-                    if(grid[L][m].getUnit() != null){
-                      Unit target = grid[L][m].getUnit();
-                      Tile targetTile = grid[L][m];
-                      int splashDamage = 15;
-                      if (!targetTile.getTerrain().equals("building") && !targetTile.getTerrain().equals("forest")){
-                        target.setHealth(target.getHealth() - splashDamage);
-                        lastAction += "Splashed " + target.getType() + " at " + target.getGridX() + "," + target.getGridY() + " \n";
+          } else if (mode.equals("attack") && dist <= unit.getAttackRange() && 
+                     grid[i][j].getUnit() != null && !unit.hasAttacked() && unit.getAmmo() > 0 ) {
+              if (unit.getType().equals("Artillery")){
+                int k = 0;
+                while (k < 4){
+                  int L = i;
+                  int m = j;
+                  if (k == 0){
+                    L = i - 1;
+                  }
+                  if (k == 1){
+                    L = i + 1;
+                  }
+                  if (k == 2){
+                    m = j - 1;
+                  }
+                  if (k == 3){
+                    m = j + 1;
+                  }
+                  if (L >= 0 && L < cols){
+                    if (m >= 0 && m < cols){
+                      if(grid[L][m].getUnit() != null){
+                        Unit target = grid[L][m].getUnit();
+                        Tile targetTile = grid[L][m];
+                        int splashDamage = 15;
+                        if (!targetTile.getTerrain().equals("building") && !targetTile.getTerrain().equals("forest")){
+                          target.setHealth(target.getHealth() - splashDamage);
+                          lastAction += "Splashed " + target.getType() + " at " + target.getGridX() + "," + target.getGridY() + " \n";
+                        }
                       }
                     }
                   }
+                  k++;
                 }
-                k++;
               }
-              // Right now, I just need this to loop to directly adjacent tiles
-              //essentially make a loop that targets the adjacent tiles (1 attack radius). All enemy units should receive damage in these tiles, with the splash being 15 damage.
-              //Use a similar method as the tile method to set the health of the enemy units in the splash radius lower by 15. If they are in the building or forest, they should
-              //receive 0 damage as these tiles shield them from shrapnel. 
-            }
-          Unit target = grid[i][j].getUnit();
-          Tile targetTile = grid[i][j];
-          unit.consumeAmmo();
-          if (targetTile.getTerrain().equals("building") || targetTile.getTerrain().equals("forest")) {
-            int damageToTile;
-            if (unit.getType().equals("Artillery")) {
-              damageToTile = 100; 
+            Unit target = grid[i][j].getUnit();
+            Tile targetTile = grid[i][j];
+            unit.consumeAmmo();
+            if (!unit.getType().equals("Supply") && (targetTile.getTerrain().equals("building") || targetTile.getTerrain().equals("forest"))) {
+              int damageToTile;
+              if (unit.getType().equals("Artillery")) {
+                damageToTile = 100; 
+              } else {
+                damageToTile = unit.getEffectiveDamage();
+              }
+              targetTile.setHealth(targetTile.getHealth() - damageToTile);
+              lastAction = unit.getType() + " damaged " + targetTile.getTerrain() + " tile at " + i + "," + j + "\n" +
+                           " for " + damageToTile + " damage (remaining tile HP: " + targetTile.getHealth() + ") \n";
+              if (targetTile.getHealth() <= 0) {
+                targetTile.setTerrain("P"); 
+                targetTile.setHealth(0);
+                lastAction += " — tile destroyed!";
+              }
+              unit.setAttacked(true);
             } else {
-              damageToTile = unit.getEffectiveDamage();
-            }
-            targetTile.setHealth(targetTile.getHealth() - damageToTile);
-            lastAction = unit.getType() + " damaged " + targetTile.getTerrain() + " tile at " + i + "," + j + "\n" +
-                         " for " + damageToTile + " damage (remaining tile HP: " + targetTile.getHealth() + ") \n";
-            if (targetTile.getHealth() <= 0) {
-              targetTile.setTerrain("P"); 
-              targetTile.setHealth(0);
-              lastAction += " — tile destroyed!";
-            }
-          } else {
-            unit.attack(target);
-            if (!unit.getType().equals("Supply")) {
-              lastAction += "Your " + unit.getType() + " at " + unit.getGridX() + "," + unit.getGridY() + 
-                           " deals " + unit.getEffectiveDamage() + " damage to\n" + target.getOwner().getName() + " " + target.getType() + 
-                           " at " + target.getGridX() + "," + target.getGridY() + " \n";
-            }
-            boolean killed = target.getHealth() <= 0;
-            if (killed) {
-              lastAction += "Enemy " + target.getType() + " at " + target.getGridX() + "," + target.getGridY() + 
-                           " destroyed by " + unit.getType();
-              for (int x = 0; x < cols; x++) {
-                for (int y = 0; y < rows; y++) {
-                  Unit other = grid[x][y].getUnit();
-                  if (other != null && other.getOwner() == target.getOwner() &&
-                      abs(other.getGridX() - target.getGridX()) + abs(other.getGridY() - target.getGridY()) <= 3) {
-                    other.setMorale(other.getMorale() - 30);
-                    if (other.getMorale() < 0) other.setMorale(0);
-                  }
-                  if (other != null && other.getOwner() != target.getOwner() &&
-                      abs(other.getGridX() - target.getGridX()) + abs(other.getGridY() - target.getGridY()) <= other.getRange() &&
-                      other != unit) {
-                    other.setMorale(other.getMorale() + 25);
+              unit.attack(target);
+              if (!unit.getType().equals("Supply")) {
+                lastAction += "Your " + unit.getType() + " at " + unit.getGridX() + "," + unit.getGridY() + 
+                             " deals " + unit.getEffectiveDamage() + " damage to\n" + target.getOwner().getName() + " " + target.getType() + 
+                             " at " + target.getGridX() + "," + target.getGridY() + " \n";
+              }
+              boolean killed = target.getHealth() <= 0;
+              if (killed) {
+                lastAction += "Enemy " + target.getType() + " at " + target.getGridX() + "," + target.getGridY() + 
+                             " destroyed by " + unit.getType();
+                for (int x = 0; x < cols; x++) {
+                  for (int y = 0; y < rows; y++) {
+                    Unit other = grid[x][y].getUnit();
+                    if (other != null && other.getOwner() == target.getOwner() &&
+                        abs(other.getGridX() - target.getGridX()) + abs(other.getGridY() - target.getGridY()) <= 3) {
+                      other.setMorale(other.getMorale() - 30);
+                      if (other.getMorale() < 0) other.setMorale(0);
+                    }
+                    if (other != null && other.getOwner() != target.getOwner() &&
+                        abs(other.getGridX() - target.getGridX()) + abs(other.getGridY() - target.getGridY()) <= other.getRange() &&
+                        other != unit) {
+                      other.setMorale(other.getMorale() + 25);
+                    }
                   }
                 }
+                grid[i][j].setUnit(null);
               }
-              grid[i][j].setUnit(null);
             }
+            clearHighlights();
+            return true;
           }
-          clearHighlights();
-          return true;
         }
       }
     }
+      return false;
   }
-    return false;
-}
 
 
   void resetUnitActions(Player player) {
@@ -234,15 +231,29 @@ boolean handleTileAction(float mx, float my, Unit unit, String mode) {
         if (u != null && u.getOwner() == player) {
           u.setMoved(false);
           u.setAttacked(false);
-          u.setMorale(u.getMorale() - 5);
+          u.setMorale(u.getMorale() + 5);
           if (u.getMorale() < 0) u.setMorale(0);
           u.updateEffectiveHealth();
         }
       }
     }
   }
+  
+  //both of the below are for the enemy controller due to my poor class planning/handling
+  void moveUnitOnGrid(Unit unit, int newX, int newY) {
+    int oldX = unit.getGridX();
+    int oldY = unit.getGridY();
+    grid[oldX][oldY].setUnit(null);
+    unit.move(newX, newY);   
+    grid[newX][newY].setUnit(unit);
+  }
+  
+  public boolean isValidCoordinate(int x, int y) {
+    return x >= 0 && x < grid.length && y >= 0 && y < grid[0].length;
+  }
 
   abstract String getObjective();
   abstract void placeInitialUnits(Player player, Player enemy);
   abstract ArrayList<Unit> getEnemyList();
+  abstract ArrayList<Unit> getPlayerList();
 }

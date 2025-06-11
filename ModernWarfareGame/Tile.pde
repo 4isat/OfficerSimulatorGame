@@ -90,25 +90,27 @@ Tile(int gridX, int gridY, String terrain, float size) {
       textAlign(CENTER, CENTER);
       textSize(size * 0.18);
       int actionsLeft;
-
       if (!unit.getType().equals("Artillery")) {
         if (!unit.hasMoved() && !unit.hasAttacked()) {
           actionsLeft = 2;
         } else if (unit.hasMoved() && !unit.hasAttacked()) {
-          actionsLeft = 1;
-        } else {
-          actionsLeft = 0;
+            actionsLeft = 1;
+        } else if (!unit.hasMoved() && unit.hasAttacked()) {
+            actionsLeft = 1;
+        }
+          else {
+            actionsLeft = 0;
         }
       } else {
         if (!unit.hasMoved() && !unit.hasAttacked()) {
           actionsLeft = 1;
         } else {
-          actionsLeft = 0;
+            actionsLeft = 0;
         }
       }
-
       text(actionsLeft, px + size / 2, py + size / 3);
       text(unit.getType(), px + size / 2, py + size / 2);
+      text("(" + unit.getID() + ")", px + size / 2, py + size / 1.5);
     }
   }
 

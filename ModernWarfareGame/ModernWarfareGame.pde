@@ -22,6 +22,7 @@ class MainGame {
   private Level currentLevel;
   private boolean showMenu = true;
   private boolean victoryAchieved = false;
+  private boolean levelLost = false;
   private Unit selectedUnit = null;
   private String mode = "move";
   private Button toggleButton;
@@ -29,12 +30,14 @@ class MainGame {
   private Button endTurnButton;
   private Button returnToMenuButton;
   private final int guiWidth = 200;
+  private EnemyController enemyController;
+
 
   MainGame() {
     player1 = new Player("Player 1", true);
     enemy = new Player("Enemy", false);
-    endTurnButton = new Button(width - guiWidth + 25, height - 140, 150, 40, "End Turn");
-    returnToMenuButton = new Button(width - guiWidth + 25, height - 180, 150, 40, "Return to Menu");
+    endTurnButton = new Button(width - guiWidth + 25, height - 350, 150, 40, "End Turn");
+    returnToMenuButton = new Button(width - guiWidth + 25, height - 140, 150, 40, "Return to Menu");
   }
   Player getPlayer1() { return player1; }
   void setPlayer1(Player p) { player1 = p; }
@@ -78,30 +81,34 @@ class MainGame {
       if (victoryAchieved) {
         displayVictoryScreen();
       } else {
-        if (currentLevel != null) {
-          currentLevel.display(width - guiWidth, height);
-          if (selectedUnit != null) {
-            displayUnitGUI(selectedUnit);
-            toggleButton.display();
-            unselectButton.display();
+        if (levelLost){
+          displayLossScreen();
+        } else {
+          if (currentLevel != null) {
+            currentLevel.display(width - guiWidth, height);
+            if (selectedUnit != null) {
+              displayUnitGUI(selectedUnit);
+              toggleButton.display();
+              unselectButton.display();
+            }
+            endTurnButton.display();
+            returnToMenuButton.display();
+            fill(180);
+            rect(width - guiWidth - 275, height - 300, 450, 150);
+            fill(0);
+            textAlign(CENTER, CENTER);
+            textSize(16);
+            if (currentLevel.getLastAction() != null){
+              text(currentLevel.getLastAction(), width - guiWidth - 75, height - 220);
+            }
+            fill(0);
+            textAlign(LEFT, TOP);
+            textSize(20);
+            fill(180, 167);
+            rect(0, 0, 800, 200);
+            fill(0);
+            text(currentLevel.getObjective(), 10, 10);
           }
-          endTurnButton.display();
-          fill(180);
-          rect(width - guiWidth - 275, height - 300, 450, 100);
-          fill(0);
-          textAlign(CENTER, CENTER);
-          textSize(16);
-          if (currentLevel.getLastAction() != null){
-            text(currentLevel.getLastAction(), width - guiWidth - 75, height - 250);
-          }
-          // above will be where action GUI is
-          fill(0);
-          textAlign(LEFT, TOP);
-          textSize(20);
-          fill(180, 167);
-          rect(0, 0, 800, 200);
-          fill(0);
-          text(currentLevel.getObjective(), 10, 10);
         }
       }
     }
@@ -132,24 +139,34 @@ class MainGame {
     textAlign(CENTER, CENTER);
     text("Victory: Objective Completed", width / 2, height / 2 - 50);
     returnToMenuButton.display();
+  }  
+  
+  void displayLossScreen() {
+    background(255, 0, 0);
+    fill(255);
+    textSize(48);
+    textAlign(CENTER, CENTER);
+    text("Level Lost: No Troops Left", width / 2, height / 2 - 50);
+    returnToMenuButton.display();
   }
 
   void handleClick(float mx, float my) {
     if (showMenu) {
       if (mx >= width / 2 - 150 && mx <= width / 2 + 150 && my >= height / 2 - 40 && my <= height / 2 + 40) {
         startTrainingCamp();
+        enemyController = new EnemyController(enemy, currentLevel.getEnemyList(), currentLevel);
         showMenu = false;
       }
       if (mx >= width / 2 - 150 && mx <= width / 2 + 150 && my >= height / 2 + 60 && my <= height / 2 + 140) {
         startFirstSkirmish();
+        enemyController = new EnemyController(enemy, currentLevel.getEnemyList(), currentLevel);
         showMenu = false;
       }
     } else {
-      if (victoryAchieved) {
         if (returnToMenuButton.isClicked(mx, my)) {
           resetToMenu();
         }
-      } else {
+       else {
         if (selectedUnit != null && toggleButton.isClicked(mx, my)) {
           if (mode.equals("move")) {
             mode = "attack";
@@ -167,6 +184,7 @@ class MainGame {
               selectedUnit = null;
               currentLevel.clearHighlights();
               checkVictoryCondition();
+              enemyController.takeTurn(currentLevel.getPlayerList());
             } else {
               if (currentLevel != null) {
                 if (selectedUnit != null) {
@@ -216,6 +234,7 @@ class MainGame {
   void checkVictoryCondition() {
     ArrayList<Unit> enemyList = currentLevel.getEnemyList();
     boolean enemyUnitsLeft = false;
+    boolean playerUnitsLeft = false;
     for (int i = 0; i < enemyList.size(); i++) {
       Unit u = enemyList.get(i);
       if (u.getHealth() > 0) {
@@ -223,8 +242,19 @@ class MainGame {
         break;
       }
     }
+    ArrayList<Unit> playerList = currentLevel.getPlayerList();
+    for (int i = 0; i < playerList.size(); i++) {
+      Unit u = playerList.get(i);
+      if (u.getHealth() > 0) {
+        playerUnitsLeft = true;
+        break;
+      }
+    }
     if (!enemyUnitsLeft) {
       victoryAchieved = true;
+    }
+    if (!playerUnitsLeft){
+      levelLost = true;
     }
   }
 
